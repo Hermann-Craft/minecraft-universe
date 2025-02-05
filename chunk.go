@@ -490,7 +490,7 @@ func (chunk *Chunk) Init(world *World) {
 		log.Fatalln(err)
 	}
 
-	chunk.ShaderProgram, err = newProgram(vertexShaderSource, fragmentShaderSource)
+	chunk.ShaderProgram, err = NewProgram(vertexShaderSource, fragmentShaderSource)
 	if err != nil {
 		log.Fatalln(err)
 	}

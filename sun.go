@@ -39,7 +39,7 @@ func (sun *Sun) Init() {
 	gl.BindVertexArray(0)
 
 	var err error
-	sun.shaderProgram, err = newProgram(sunVertexShaderSource, sunFragmentShaderSource)
+	sun.shaderProgram, err = NewProgram(sunVertexShaderSource, sunFragmentShaderSource)
 	if err != nil {
 		log.Fatalln(err)
 	}

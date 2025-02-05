@@ -67,7 +67,7 @@ type TextRenderer struct {
 func (textRenderer *TextRenderer) Init() error {
 	// Initialisation du rendu du texte :
 	var err error
-	textRenderer.textShaderProgram, err = newProgram(textVertexShaderSource, textFragmentShaderSource)
+	textRenderer.textShaderProgram, err = NewProgram(textVertexShaderSource, textFragmentShaderSource)
 	if err != nil {
 		log.Fatalln("Erreur lors de la création du shader de texte:", err)
 		return err

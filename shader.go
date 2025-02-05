@@ -59,3 +59,52 @@ func (shader *Shader) Activate() {
 func (shader *Shader) Delete() {
 	gl.DeleteProgram(shader.ID)
 }
+
+//////////////////////////////////////////////////////////
+// Fonctions d'aide pour les shaders
+//////////////////////////////////////////////////////////
+
+func NewProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error) {
+	vertexShader, err := CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		return 0, err
+	}
+	fragmentShader, err := CompileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		return 0, err
+	}
+	program := gl.CreateProgram()
+	gl.AttachShader(program, vertexShader)
+	gl.AttachShader(program, fragmentShader)
+	gl.LinkProgram(program)
+	var status int32
+	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
+		logInfo := make([]byte, logLength+1)
+		gl.GetProgramInfoLog(program, logLength, nil, &logInfo[0])
+		return 0, fmt.Errorf("échec du linkage du programme : %s", logInfo)
+	}
+	gl.DeleteShader(vertexShader)
+	gl.DeleteShader(fragmentShader)
+	return program, nil
+}
+
+func CompileShader(source string, shaderType uint32) (uint32, error) {
+	shader := gl.CreateShader(shaderType)
+	csources, free := gl.Strs(source)
+	gl.ShaderSource(shader, 1, csources, nil)
+	free()
+	gl.CompileShader(shader)
+	var status int32
+	gl.GetShaderiv(shader, gl.COMPILE_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
+		logInfo := make([]byte, logLength+1)
+		gl.GetShaderInfoLog(shader, logLength, nil, &logInfo[0])
+		return 0, fmt.Errorf("échec de la compilation du shader (type %v) : %s", shaderType, logInfo)
+	}
+	return shader, nil
+}

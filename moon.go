@@ -41,7 +41,7 @@ func (moon *Moon) Init() {
 	gl.BindVertexArray(0)
 
 	var err error
-	moon.shaderProgram, err = newProgram(moonVertexShaderSource, moonFragmentShaderSource)
+	moon.shaderProgram, err = NewProgram(moonVertexShaderSource, moonFragmentShaderSource)
 	if err != nil {
 		log.Fatalln(err)
 	}

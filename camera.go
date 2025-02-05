@@ -12,6 +12,8 @@ import (
 //////////////////////////////////////////////////////////
 
 type Camera struct {
+	UniversePosition
+
 	Position         mgl32.Vec3 // Position dans le monde
 	Yaw              float32    // Angle horizontal (en degrés) dans le repère canonique
 	Pitch            float32    // Angle vertical (en degrés) dans le repère canonique
