@@ -6,6 +6,8 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
+	goecs "github.com/oneforx/go-ecs"
 )
 
 type Game struct {
@@ -40,10 +42,41 @@ func (game *Game) Init() {
 		log.Fatalln("Erreur lors de l'initialisation d'OpenGL:", err)
 	}
 	log.Println("Version d'OpenGL:", gl.GoStr(gl.GetString(gl.VERSION)))
-	gl.Enable(gl.DEPTH_TEST)
+	// gl.Enable(gl.DEPTH_TEST)
+
+	universe := &Universe{}
+
+	universe.Init()
+
+	galaxy := &Galaxy{}
+
+	galaxy.Init(
+		goecs.Identifier{Namespace: "core", Path: "default-galaxy"},
+		mgl32.Vec3{0, 0, 0},
+		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+	)
+
+	planetSun := &Planet{}
+
+	planetSun.Init(
+		goecs.Identifier{Namespace: "core", Path: "sun-planet"},
+		mgl32.Vec3{0, 0, 0},
+		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+	)
+
+	planetEarth := &Planet{}
+
+	scale := 0.0000000001 // 149597870700 m
+
+	planetEarth.Init(
+		goecs.Identifier{Namespace: "core", Path: "earth-planet"},
+		mgl32.Vec3{0, 0, 0},
+		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+	)
+
+	universe.AddGalaxy(*galaxy)
 
 	frameDuration := time.Second / time.Duration(game.FpsLimit)
-
 	previousTime := time.Now()
 	for !game.window.ShouldClose() {
 		currentTime := time.Now()

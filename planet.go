@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-gl/mathgl/mgl32"
 	goecs "github.com/oneforx/go-ecs"
 )
 
 type Planet struct {
 	*goecs.Identifier
-	*GalaxyPosition
-	*GalaxyRotation
+	UniversePosition *mgl32.Vec3
+	UniverseRotation *mgl32.Quat
 
 	// Technicals
 
@@ -22,10 +23,10 @@ type Planet struct {
 	isInit bool
 }
 
-func (planet *Planet) Init(identifier goecs.Identifier, position GalaxyPosition, rotation GalaxyRotation) error {
+func (planet *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation mgl32.Quat) error {
 	planet.Identifier = &identifier
-	planet.GalaxyPosition = &position
-	planet.GalaxyRotation = &rotation
+	planet.UniversePosition = &position
+	planet.UniverseRotation = &rotation
 
 	planet.isInit = true
 	return nil
