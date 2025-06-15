@@ -95,6 +95,7 @@ type Chunk struct {
 	*goecs.Identifier
 	Position *mgl32.Vec3
 	Rotation *mgl32.Quat
+	Planet   *Planet // Référence à la planète parente
 
 	// OpenGL
 	vao             uint32
@@ -311,12 +312,14 @@ func (c *Chunk) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation 
 	c.Position = &position
 	c.Rotation = &rotation
 
-	// Charger le shader
-	var err error
-	c.shader, err = LoadShader("default")
-	if err != nil {
-		log.Printf("Failed to load shader: %v", err)
-		return fmt.Errorf("failed to load shader: %v", err)
+	// Charger le shader seulement s'il n'est pas déjà chargé
+	if c.shader == nil {
+		var err error
+		c.shader, err = LoadShader("default")
+		if err != nil {
+			log.Printf("Failed to load shader: %v", err)
+			return fmt.Errorf("failed to load shader: %v", err)
+		}
 	}
 
 	// Charger la texture
@@ -352,24 +355,59 @@ func (c *Chunk) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation 
 	return nil
 }
 
+func (c *Chunk) isEdgeChunk() bool {
+	if c.Planet == nil {
+		return false // Par défaut, pas d'info
+	}
+	chunkX := int(c.Position.X()) / ChunkSize
+	chunkY := int(c.Position.Y()) / ChunkSize
+	chunkZ := int(c.Position.Z()) / ChunkSize
+	sizeX := int(c.Planet.Size.X())
+	sizeY := int(c.Planet.Size.Y())
+	sizeZ := int(c.Planet.Size.Z())
+	return chunkX == 0 || chunkX == sizeX-1 ||
+		chunkY == 0 || chunkY == sizeY-1 ||
+		chunkZ == 0 || chunkZ == sizeZ-1
+}
+
 func (c *Chunk) GenerateBlocks() {
-	log.Println("Generating blocks...")
-	for x := 0; x < ChunkSize; x++ {
-		for z := 0; z < ChunkSize; z++ {
-			for y := 0; y < ChunkHeight; y++ {
-				if y == 0 {
-					c.Blocks[x][y][z] = Block{Type: BlockTypeGrass}
-				} else if y < 4 {
-					c.Blocks[x][y][z] = Block{Type: BlockTypeDirt}
-				} else if y < 8 {
+	if c.isEdgeChunk() {
+		// Relief avec noise sur les chunks d'extrémité
+		p := perlin.NewPerlin(2, 2, 3, 42)
+		for x := 0; x < ChunkSize; x++ {
+			for z := 0; z < ChunkSize; z++ {
+				globalX := x + int(c.Position.X())
+				globalZ := z + int(c.Position.Z())
+				height := int((fractalNoise2D(p, float64(globalX), float64(globalZ), 4, 0.5, 2.0) + 1) * float64(ChunkHeight*3/4))
+				if height < 1 {
+					height = 1
+				}
+				for y := 0; y < ChunkHeight; y++ {
+					globalY := y + int(c.Position.Y())
+					if globalY < height {
+						if globalY == height-1 {
+							c.Blocks[x][y][z] = Block{Type: BlockTypeGrass}
+						} else if globalY > height-5 {
+							c.Blocks[x][y][z] = Block{Type: BlockTypeDirt}
+						} else {
+							c.Blocks[x][y][z] = Block{Type: BlockTypeStone}
+						}
+					} else {
+						c.Blocks[x][y][z] = Block{Type: BlockTypeAir}
+					}
+				}
+			}
+		}
+	} else {
+		// Chunk interne : plein de blocs solides
+		for x := 0; x < ChunkSize; x++ {
+			for z := 0; z < ChunkSize; z++ {
+				for y := 0; y < ChunkHeight; y++ {
 					c.Blocks[x][y][z] = Block{Type: BlockTypeStone}
-				} else {
-					c.Blocks[x][y][z] = Block{Type: BlockTypeAir}
 				}
 			}
 		}
 	}
-	log.Println("Blocks generation complete")
 }
 
 // GenerateVertices génère les vertices du chunk
@@ -381,7 +419,6 @@ func (c *Chunk) GenerateVertices() {
 	log.Println("Starting mesh generation...")
 	c.Vertices = make([]float32, 0)
 
-	// Générer les vertices pour chaque bloc
 	for x := 0; x < ChunkSize; x++ {
 		for y := 0; y < ChunkSize; y++ {
 			for z := 0; z < ChunkSize; z++ {
@@ -389,40 +426,35 @@ func (c *Chunk) GenerateVertices() {
 				if block.Type == BlockTypeAir {
 					continue
 				}
-
-				// Pour chaque direction possible
 				for _, dir := range directions {
 					if c.isFaceVisible(x, y, z, dir.dx, dir.dy, dir.dz) {
-						// Obtenir les vertices de la face
 						faceVerts := faceVertices[dir.name]
 						if len(faceVerts) == 0 {
 							continue
 						}
-
-						// Obtenir les UV pour ce type de bloc et cette face
-						uv := GetTextureUV(block.Type, dir.name)
-
-						// Ajouter les vertices de la face au mesh
+						textureName := GetBlockFaceTextureName(block.Type, dir.name)
+						u1, v1, u2, v2 := c.TextureAtlas.GetTextureCoords(textureName)
+						if u1 == 0 && v1 == 0 && u2 == 1 && v2 == 1 && textureName != "grass_block_top.png" {
+							log.Printf("[WARN] Texture '%s' not found in atlas for block type %d face %s", textureName, block.Type, dir.name)
+						}
 						for i := 0; i < len(faceVerts); i += 8 {
-							// Position (x, y, z)
-							posX := faceVerts[i] + float32(x)
-							posY := faceVerts[i+1] + float32(y)
-							posZ := faceVerts[i+2] + float32(z)
-
-							// UV (u, v)
-							u := uv[0] + faceVerts[i+3]
-							v := uv[1] + faceVerts[i+4]
-
-							// Normal (nx, ny, nz)
+							vx := faceVerts[i+0]
+							vy := faceVerts[i+1]
+							vz := faceVerts[i+2]
+							tu := faceVerts[i+3]
+							uv := faceVerts[i+4]
 							nx := faceVerts[i+5]
 							ny := faceVerts[i+6]
 							nz := faceVerts[i+7]
-
-							// Ajouter le vertex complet
+							// Interpolation UV (tu, uv sont 0 ou 1)
+							u := u1 + (u2-u1)*tu
+							v := v1 + (v2-v1)*uv
 							c.Vertices = append(c.Vertices,
-								posX, posY, posZ, // Position
-								u, v, // UV
-								nx, ny, nz, // Normal
+								float32(x)+vx,
+								float32(y)+vy,
+								float32(z)+vz,
+								nx, ny, nz,
+								u, v,
 							)
 						}
 					}
@@ -430,7 +462,6 @@ func (c *Chunk) GenerateVertices() {
 			}
 		}
 	}
-
 	c.isMeshGenerated = true
 	log.Printf("Mesh generation complete. Generated %d vertices", len(c.Vertices))
 }
@@ -487,12 +518,12 @@ func (c *Chunk) GenerateMesh() {
 	// Position
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
-	// Coordonnées de texture
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(3*4))
-	gl.EnableVertexAttribArray(1)
 	// Normale
-	gl.VertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(5*4))
+	gl.VertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(3*4))
 	gl.EnableVertexAttribArray(2)
+	// UV
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(6*4))
+	gl.EnableVertexAttribArray(1)
 
 	// Désactiver le VAO
 	gl.BindVertexArray(0)
@@ -563,12 +594,12 @@ func (c *Chunk) setupMesh() {
 	// Position
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
-	// Coordonnées de texture
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(3*4))
-	gl.EnableVertexAttribArray(1)
 	// Normale
-	gl.VertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(5*4))
+	gl.VertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(3*4))
 	gl.EnableVertexAttribArray(2)
+	// UV
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(6*4))
+	gl.EnableVertexAttribArray(1)
 
 	// Désactiver le VAO
 	gl.BindVertexArray(0)
@@ -593,24 +624,22 @@ func (c *Chunk) Render(currentTime float64) {
 		return
 	}
 
-	// S'assurer que nous avons un contexte OpenGL valide
 	if glfw.GetCurrentContext() == nil {
 		log.Println("No valid OpenGL context in chunk render")
 		return
 	}
 
-	// Vérifier si le shader est valide
 	if c.shader == nil {
 		log.Println("Invalid shader in chunk render")
 		return
 	}
 
-	// Activer le shader
 	c.shader.Activate()
 
-	// Activer la texture
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, c.texture)
+	// Toujours binder l'atlas
+	if c.TextureAtlas != nil {
+		c.TextureAtlas.Bind()
+	}
 	gl.Uniform1i(gl.GetUniformLocation(c.shader.ID, gl.Str("ourTexture\x00")), 0)
 
 	// Calculer la matrice de transformation
@@ -650,7 +679,7 @@ func (c *Chunk) Render(currentTime float64) {
 	gl.UniformMatrix4fv(viewLoc, 1, false, &view[0])
 	gl.UniformMatrix4fv(projLoc, 1, false, &projection[0])
 
-	// Paramètres d'éclairage
+	// Paramètres d'éclairage (ajustés pour une meilleure visibilité)
 	lightPos := mgl32.Vec3{10.0, 10.0, 10.0}
 	lightColor := mgl32.Vec3{1.0, 1.0, 1.0}
 	viewPos := CameraInstance.Position
@@ -658,7 +687,7 @@ func (c *Chunk) Render(currentTime float64) {
 	gl.Uniform3f(lightPosLoc, lightPos.X(), lightPos.Y(), lightPos.Z())
 	gl.Uniform3f(lightColorLoc, lightColor.X(), lightColor.Y(), lightColor.Z())
 	gl.Uniform3f(viewPosLoc, viewPos.X(), viewPos.Y(), viewPos.Z())
-	gl.Uniform1f(ambientLoc, 0.2)
+	gl.Uniform1f(ambientLoc, 0.5) // augmenté (était 0.2)
 	gl.Uniform1f(specularStrengthLoc, 0.5)
 	gl.Uniform1f(shininessLoc, 32.0)
 
@@ -696,20 +725,28 @@ func (c *Chunk) isFaceVisible(x, y, z, dx, dy, dz int) bool {
 	return c.Blocks[nx][ny][nz].Type == BlockTypeAir
 }
 
-// GetTextureUV retourne les coordonnées UV pour un type de bloc et une face
-func GetTextureUV(t BlockType, face string) [2]float32 {
-	// À adapter selon ton atlas
+// GetTextureUV retourne les coordonnées UV pour un type de bloc et une face, selon l'atlas
+func (c *Chunk) GetTextureUV(t BlockType, face string) (float32, float32, float32, float32) {
+	if c.TextureAtlas == nil {
+		return 0, 0, 1, 1
+	}
+	textureName := getTextureNameForBlockFace(t, face)
+	return c.TextureAtlas.GetTextureCoords(textureName)
+}
+
+// getTextureNameForBlockFace retourne le nom de la texture pour un bloc et une face
+func getTextureNameForBlockFace(t BlockType, face string) string {
 	switch t {
 	case BlockTypeGrass:
 		if face == "top" {
-			return [2]float32{0, 0}
+			return "grass_block_top.png"
 		}
-		return [2]float32{1, 0}
+		return "grass_block_top.png" // à adapter pour d'autres faces
 	case BlockTypeDirt:
-		return [2]float32{2, 0}
+		return "dirt.png"
 	case BlockTypeStone:
-		return [2]float32{3, 0}
+		return "stone.png"
 	default:
-		return [2]float32{0, 0}
+		return "grass_block_top.png"
 	}
 }

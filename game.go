@@ -69,6 +69,7 @@ func (game *Game) Init() {
 		goecs.Identifier{Namespace: "core", Path: "sun-planet"},
 		mgl32.Vec3{0, 0, 0},
 		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+		mgl32.Vec3{3, 3, 3}, // Taille de la planète en chunks (X, Y, Z)
 	)
 
 	planetEarth := &Planet{}
@@ -79,6 +80,7 @@ func (game *Game) Init() {
 		goecs.Identifier{Namespace: "core", Path: "earth-planet"},
 		mgl32.Vec3{0, 0, 0},
 		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+		mgl32.Vec3{3, 3, 3}, // Taille de la planète en chunks (X, Y, Z)
 	)
 
 	// Passer la fenêtre à la planète
@@ -145,4 +147,22 @@ func (game *Game) Init() {
 			time.Sleep(sleepTime)
 		}
 	}
+}
+
+func (game *Game) Cleanup() {
+	// Nettoyer les shaders
+	CleanupShaders()
+
+	// Nettoyer la planète
+	for _, galaxy := range game.Universe.GetGalaxies() {
+		for _, planet := range galaxy.Planets {
+			planet.Cleanup()
+		}
+	}
+
+	// Nettoyer la fenêtre
+	if game.window != nil {
+		game.window.Destroy()
+	}
+	glfw.Terminate()
 }

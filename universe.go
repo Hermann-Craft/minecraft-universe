@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/go-gl/mathgl/mgl32"
 	goecs "github.com/oneforx/go-ecs"
@@ -15,6 +16,7 @@ type Universe struct {
 
 	// Technicals
 	isInit bool
+	mutex  sync.RWMutex
 }
 
 func (universe *Universe) Init() error {
@@ -52,6 +54,18 @@ func (universe *Universe) AddGalaxy(galaxy Galaxy) error {
 // Can return null
 func (universe *Universe) GetGalaxyById(galaxyId goecs.Identifier) *Galaxy {
 	return universe.galaxies[galaxyId.String()]
+}
+
+// GetGalaxies retourne une copie de la liste des galaxies
+func (u *Universe) GetGalaxies() []*Galaxy {
+	u.mutex.RLock()
+	defer u.mutex.RUnlock()
+
+	galaxies := make([]*Galaxy, 0, len(u.galaxies))
+	for _, galaxy := range u.galaxies {
+		galaxies = append(galaxies, galaxy)
+	}
+	return galaxies
 }
 
 // ERRORS

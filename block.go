@@ -64,6 +64,34 @@ var (
 		3, 2, 6, 6, 7, 3, // Face haut
 		4, 5, 1, 1, 0, 4, // Face bas
 	}
+
+	// Mapping des textures par type de bloc et par face
+	BlockTextureMap = map[BlockType]map[string]string{
+		BlockTypeGrass: {
+			"top":    "grass_block_top.png",
+			"bottom": "dirt.png",
+			"front":  "grass_block_top.png",
+			"back":   "grass_block_top.png",
+			"left":   "grass_block_top.png",
+			"right":  "grass_block_top.png",
+		},
+		BlockTypeDirt: {
+			"top":    "dirt.png",
+			"bottom": "dirt.png",
+			"front":  "dirt.png",
+			"back":   "dirt.png",
+			"left":   "dirt.png",
+			"right":  "dirt.png",
+		},
+		BlockTypeStone: {
+			"top":    "blackstone.png",
+			"bottom": "blackstone.png",
+			"front":  "blackstone.png",
+			"back":   "blackstone.png",
+			"left":   "blackstone.png",
+			"right":  "blackstone.png",
+		},
+	}
 )
 
 // GetTextureCoords retourne les coordonnées de texture pour un type de bloc donné
@@ -148,4 +176,14 @@ func (block *Block) IsTransparent() bool {
 // IsSolid retourne true si le bloc est solide
 func (block *Block) IsSolid() bool {
 	return block.Type != BlockTypeAir
+}
+
+// Fonction utilitaire pour obtenir le nom de la texture pour un bloc et une face
+func GetBlockFaceTextureName(t BlockType, face string) string {
+	if faces, ok := BlockTextureMap[t]; ok {
+		if name, ok := faces[face]; ok {
+			return name
+		}
+	}
+	return "grass_block_top.png" // fallback explicite
 }

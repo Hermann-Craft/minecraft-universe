@@ -20,6 +20,7 @@ type Planet struct {
 	Identifier goecs.Identifier
 	Position   mgl32.Vec3
 	Rotation   mgl32.Quat
+	Size       mgl32.Vec3 // Taille de la planète en chunks (X, Y, Z)
 	Chunks     [][][]*Chunk
 	isInit     bool
 
@@ -34,7 +35,7 @@ type Planet struct {
 	window           *glfw.Window    // Référence à la fenêtre pour le contexte OpenGL
 }
 
-func (p *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation mgl32.Quat) error {
+func (p *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation mgl32.Quat, size mgl32.Vec3) error {
 	if p.isInit {
 		return ErrPlanetAlreadyExist
 	}
@@ -44,6 +45,7 @@ func (p *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation
 	p.Identifier = identifier
 	p.Position = position
 	p.Rotation = rotation
+	p.Size = size
 	p.isInit = true
 	p.loadedChunks = make(map[*Chunk]bool)
 
@@ -62,48 +64,40 @@ func (p *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation
 
 	log.Println("Initializing chunks grid...")
 
-	// Initialiser la grille de chunks (3x3x3 pour commencer)
-	p.Chunks = make([][][]*Chunk, 3)
-	for x := range p.Chunks {
-		p.Chunks[x] = make([][]*Chunk, 3)
-		for y := range p.Chunks[x] {
-			p.Chunks[x][y] = make([]*Chunk, 3)
-			for z := range p.Chunks[x][y] {
+	// Initialiser la grille de chunks dynamiquement selon la taille
+	sizeX := int(p.Size.X())
+	sizeY := int(p.Size.Y())
+	sizeZ := int(p.Size.Z())
+	p.Chunks = make([][][]*Chunk, sizeX)
+	for x := 0; x < sizeX; x++ {
+		p.Chunks[x] = make([][]*Chunk, sizeY)
+		for y := 0; y < sizeY; y++ {
+			p.Chunks[x][y] = make([]*Chunk, sizeZ)
+			for z := 0; z < sizeZ; z++ {
 				// Créer un nouveau chunk à la position (x,y,z)
 				globalPos := mgl32.Vec3{
-					float32(x-1) * 16, // -16, 0, 16
-					float32(y-1) * 16,
-					float32(z-1) * 16,
+					float32(x) * 16, // ChunkSize
+					float32(y) * 16,
+					float32(z) * 16,
 				}
-
 				log.Printf("Creating chunk at position (%d, %d, %d)", x, y, z)
-
-				// Créer le chunk avec la position globale
-				chunk, err := NewChunk(
-					globalPos,
-					int64(x*1000+y*100+z), // Seed unique pour chaque chunk
-				)
+				chunk, err := NewChunk(globalPos, int64(x*1000+y*100+z))
 				if err != nil {
 					return err
 				}
-
-				// Initialiser le chunk
 				chunk.TextureAtlas = textureAtlas
-
+				chunk.Planet = p // Associer la planète parente
 				p.Chunks[x][y][z] = chunk
 			}
 		}
 	}
 
 	log.Println("Starting chunk load workers...")
-
-	// Démarrer les workers de chargement
 	for i := 0; i < p.chunkLoadWorkers; i++ {
 		go p.chunkLoadWorker()
 	}
 
 	log.Println("Planet initialization complete")
-
 	return nil
 }
 

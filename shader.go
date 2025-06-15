@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 )
@@ -11,6 +12,11 @@ import (
 type Shader struct {
 	ID uint32
 }
+
+var (
+	shaderCache     = make(map[string]*Shader)
+	shaderCacheLock sync.RWMutex
+)
 
 // checkGLError vérifie s'il y a une erreur OpenGL et la retourne si c'est le cas
 func checkGLError() error {
@@ -22,6 +28,23 @@ func checkGLError() error {
 }
 
 func LoadShader(name string) (*Shader, error) {
+	// Vérifier d'abord dans le cache
+	shaderCacheLock.RLock()
+	if shader, exists := shaderCache[name]; exists {
+		shaderCacheLock.RUnlock()
+		return shader, nil
+	}
+	shaderCacheLock.RUnlock()
+
+	// Si pas dans le cache, charger le shader
+	shaderCacheLock.Lock()
+	defer shaderCacheLock.Unlock()
+
+	// Vérifier à nouveau (un autre thread pourrait l'avoir chargé entre temps)
+	if shader, exists := shaderCache[name]; exists {
+		return shader, nil
+	}
+
 	log.Printf("Loading shader: %s", name)
 	shader := &Shader{}
 
@@ -68,7 +91,7 @@ func LoadShader(name string) (*Shader, error) {
 	if success == gl.FALSE {
 		var logLength int32
 		gl.GetShaderiv(vertexShader, gl.INFO_LOG_LENGTH, &logLength)
-		logInfo := make([]byte, logLength+1)
+		logInfo := make([]byte, logLength)
 		gl.GetShaderInfoLog(vertexShader, logLength, nil, &logInfo[0])
 		gl.DeleteShader(vertexShader)
 		log.Printf("Failed to compile vertex shader: %s", logInfo)
@@ -150,23 +173,22 @@ func LoadShader(name string) (*Shader, error) {
 	if success == gl.FALSE {
 		var logLength int32
 		gl.GetProgramiv(shader.ID, gl.INFO_LOG_LENGTH, &logLength)
-		logInfo := make([]byte, logLength+1)
-		gl.GetProgramInfoLog(shader.ID, logLength, nil, &logInfo[0])
+		logInfo := make([]byte, logLength)
+		gl.GetShaderInfoLog(shader.ID, logLength, nil, &logInfo[0])
 		gl.DeleteShader(vertexShader)
 		gl.DeleteShader(fragmentShader)
 		gl.DeleteProgram(shader.ID)
 		log.Printf("Failed to link shader program: %s", logInfo)
 		return nil, fmt.Errorf("failed to link shader program: %s", logInfo)
 	}
-	log.Printf("Successfully linked shader program")
 
-	// Nettoyer
+	// Nettoyer les shaders individuels car ils sont maintenant liés au programme
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
-	if err := checkGLError(); err != nil {
-		gl.DeleteProgram(shader.ID)
-		return nil, fmt.Errorf("failed to cleanup shaders: %v", err)
-	}
+
+	// Ajouter au cache
+	shaderCache[name] = shader
+	log.Printf("Successfully linked shader program")
 
 	return shader, nil
 }
@@ -226,4 +248,15 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 		return 0, fmt.Errorf("échec de la compilation du shader (type %v) : %s", shaderType, logInfo)
 	}
 	return shader, nil
+}
+
+// CleanupShaders nettoie tous les shaders du cache
+func CleanupShaders() {
+	shaderCacheLock.Lock()
+	defer shaderCacheLock.Unlock()
+
+	for _, shader := range shaderCache {
+		gl.DeleteProgram(shader.ID)
+	}
+	shaderCache = make(map[string]*Shader)
 }
