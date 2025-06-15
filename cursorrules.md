@@ -1,0 +1,171 @@
+# Cursor Rules and Best Practices
+
+## Error Handling
+
+### Rule 1: Never Ignore Critical Errors
+- **NEVER** continue program execution after a critical error
+- Critical errors include but are not limited to:
+  - Resource initialization failures (shaders, textures, buffers)
+  - Memory allocation failures
+  - File system errors
+  - OpenGL context errors
+  - Network errors
+  - Database errors
+
+### Rule 2: Error Propagation
+- Always propagate errors up the call stack
+- If a function can fail, it should return an error
+- Don't swallow errors with `_` unless explicitly documented why
+- Log errors with appropriate context before returning them
+
+### Rule 3: Error Context
+- Add context to errors using `fmt.Errorf("failed to X: %w", err)`
+- Include relevant parameters in error messages
+- Log errors with appropriate log levels (ERROR for critical, WARN for non-critical)
+
+### Rule 4: Resource Cleanup
+- Always clean up resources in case of errors
+- Use `defer` for cleanup operations
+- Ensure cleanup happens in reverse order of initialization
+
+### Rule 5: Panic Usage
+- Only use `panic` for truly unrecoverable situations
+- Document any function that might panic
+- Consider using `recover` only at the top level of goroutines
+
+## Example of Good Error Handling
+
+```go
+// BAD: Ignoring error and continuing
+func NewChunk() *Chunk {
+    shader, err := LoadShader("default")
+    if err != nil {
+        log.Printf("Failed to load shader: %v", err)
+        // Continuing execution is wrong!
+    }
+    return &Chunk{shader: shader}
+}
+
+// GOOD: Proper error handling
+func NewChunk() (*Chunk, error) {
+    shader, err := LoadShader("default")
+    if err != nil {
+        return nil, fmt.Errorf("failed to create chunk: %w", err)
+    }
+    return &Chunk{shader: shader}, nil
+}
+
+// GOOD: With cleanup
+func InitializeResources() error {
+    shader, err := LoadShader("default")
+    if err != nil {
+        return fmt.Errorf("failed to load shader: %w", err)
+    }
+    defer func() {
+        if err != nil {
+            shader.Cleanup()
+        }
+    }()
+
+    texture, err := LoadTexture("texture.png")
+    if err != nil {
+        return fmt.Errorf("failed to load texture: %w", err)
+    }
+    defer func() {
+        if err != nil {
+            texture.Cleanup()
+        }
+    }()
+
+    return nil
+}
+```
+
+## OpenGL Specific Rules
+
+### Rule 1: Context Validation
+- Always check for valid OpenGL context before operations
+- Fail fast if context is invalid
+- Don't attempt to recover from invalid context
+
+### Rule 2: Resource Management
+- Always check for OpenGL errors after critical operations
+- Clean up resources (VAO, VBO, textures) in case of errors
+- Use appropriate error checking functions for OpenGL operations
+
+### Rule 3: Shader Management
+- Never continue if shader compilation fails
+- Always validate shader program linking
+- Clean up shader resources in case of errors
+
+## Example of Good OpenGL Error Handling
+
+```go
+func LoadShader(name string) (*Shader, error) {
+    if glfw.GetCurrentContext() == nil {
+        return nil, fmt.Errorf("no valid OpenGL context")
+    }
+
+    shader := &Shader{}
+    
+    // Load and compile vertex shader
+    vertexShader, err := compileShader(vertexSource, gl.VERTEX_SHADER)
+    if err != nil {
+        return nil, fmt.Errorf("failed to compile vertex shader: %w", err)
+    }
+    defer gl.DeleteShader(vertexShader)
+
+    // Load and compile fragment shader
+    fragmentShader, err := compileShader(fragmentSource, gl.FRAGMENT_SHADER)
+    if err != nil {
+        return nil, fmt.Errorf("failed to compile fragment shader: %w", err)
+    }
+    defer gl.DeleteShader(fragmentShader)
+
+    // Create and link program
+    program := gl.CreateProgram()
+    if program == 0 {
+        return nil, fmt.Errorf("failed to create shader program")
+    }
+
+    gl.AttachShader(program, vertexShader)
+    gl.AttachShader(program, fragmentShader)
+    gl.LinkProgram(program)
+
+    // Check for linking errors
+    var status int32
+    gl.GetProgramiv(program, gl.LINK_STATUS, &status)
+    if status == gl.FALSE {
+        var logLength int32
+        gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
+        log := make([]byte, logLength)
+        gl.GetProgramInfoLog(program, logLength, nil, &log[0])
+        gl.DeleteProgram(program)
+        return nil, fmt.Errorf("failed to link shader program: %s", string(log))
+    }
+
+    return &Shader{ID: program}, nil
+}
+```
+
+## General Best Practices
+
+### Rule 1: Documentation
+- Document all exported functions
+- Include error conditions in documentation
+- Document any assumptions or requirements
+
+### Rule 2: Testing
+- Write tests for error conditions
+- Test resource cleanup
+- Test error propagation
+
+### Rule 3: Logging
+- Use appropriate log levels
+- Include context in log messages
+- Log errors before returning them
+
+### Rule 4: Code Organization
+- Keep functions focused and small
+- Use meaningful error types
+- Group related functionality 

@@ -16,6 +16,7 @@ type Galaxy struct {
 	UniversePosition *mgl32.Vec3
 	UniverseRotation *mgl32.Quat
 
+	Sun     *Sun
 	Planets map[string]*Planet
 
 	// Technicals
@@ -29,6 +30,18 @@ func (galaxy *Galaxy) Init(identifier goecs.Identifier, position mgl32.Vec3, rot
 
 	galaxy.Planets = make(map[string]*Planet)
 
+	// Initialiser le soleil
+	sun := &Sun{}
+	err := sun.Init(
+		goecs.Identifier{Namespace: "core", Path: "sun"},
+		mgl32.Vec3{100, 100, 100},                // Position du soleil
+		mgl32.Quat{W: 1, V: mgl32.Vec3{0, 0, 0}}, // Rotation du soleil
+	)
+	if err != nil {
+		return fmt.Errorf("failed to initialize sun: %v", err)
+	}
+	galaxy.Sun = sun
+
 	galaxy.isInit = true
 	return nil
 }
@@ -37,13 +50,19 @@ func (galaxy *Galaxy) IsInit() bool {
 	return galaxy.isInit
 }
 
-func (galaxy *Galaxy) Render() {
+func (galaxy *Galaxy) Render(currentTime float64) {
+	// Rendre le soleil
+	if galaxy.Sun != nil {
+		galaxy.Sun.Render(currentTime, galaxy)
+	}
+
+	// Rendre les planètes
 	for _, planet := range galaxy.Planets {
-		if !planet.isInit {
+		if !planet.IsInit() {
 			return
 		}
 
-		planet.Render()
+		planet.Render(currentTime)
 	}
 }
 
@@ -60,6 +79,7 @@ func (galaxy *Galaxy) AddPlanet(planet *Planet) error {
 		return ErrPlanetAlreadyExist
 	}
 
+	galaxy.Planets[planet.Identifier.String()] = planet
 	return nil
 }
 

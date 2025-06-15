@@ -24,9 +24,9 @@ func (universe *Universe) Init() error {
 	return nil
 }
 
-func (universe *Universe) Render() {
+func (universe *Universe) Render(currentTime float64) {
 	for _, galaxy := range universe.galaxies {
-		galaxy.Render()
+		galaxy.Render(currentTime)
 	}
 }
 

@@ -36,8 +36,38 @@ type Camera struct {
 	CurrentSwappingTime int
 	MaxSwappingTime     int
 
-	// Pour un traitement global, on conserve la référence au monde (pour par exemple accéder à CenterPosition)
-	World *World
+	WorldUp mgl32.Vec3
+	Zoom    float32
+	Frustum *Frustum
+}
+
+// Définition des faces du monde pour la caméra et les chunks
+
+type WorldFace int
+
+const (
+	WorldFaceTop WorldFace = iota
+	WorldFaceBottom
+	WorldFaceLeft
+	WorldFaceRight
+	WorldFaceFront
+	WorldFaceBack
+)
+
+// Définition des normales pour chaque face du cube
+
+type faceNormal struct {
+	face   WorldFace
+	normal mgl32.Vec3
+}
+
+var cubeFaceNormals = []faceNormal{
+	{WorldFaceTop, mgl32.Vec3{0, 1, 0}},
+	{WorldFaceBottom, mgl32.Vec3{0, -1, 0}},
+	{WorldFaceLeft, mgl32.Vec3{-1, 0, 0}},
+	{WorldFaceRight, mgl32.Vec3{1, 0, 0}},
+	{WorldFaceFront, mgl32.Vec3{0, 0, 1}},
+	{WorldFaceBack, mgl32.Vec3{0, 0, -1}},
 }
 
 func NewCamera(position mgl32.Vec3) *Camera {
@@ -51,24 +81,17 @@ func NewCamera(position mgl32.Vec3) *Camera {
 		CurrentSwappingTime: 0,
 		MaxSwappingTime:     60,
 		// Initialisation des angles canoniques par défaut (pour la face Top)
-		Yaw:   90,  // Dans le repère canonique, 90° signifie que l'on regarde dans une direction "standard"
-		Pitch: -15, // On regarde légèrement vers le bas
+		Yaw:     90,  // Dans le repère canonique, 90° signifie que l'on regarde dans une direction "standard"
+		Pitch:   -15, // On regarde légèrement vers le bas
+		Frustum: NewFrustum(),
 	}
 }
 
 // Init configure la caméra en fonction du monde et de la face sur laquelle le joueur spawn.
-func (cam *Camera) Init(world *World, worldFace WorldFace) {
-	cam.World = world
+func (cam *Camera) Init(worldFace WorldFace) {
 	cam.CurrentWorldFace = worldFace
-
-	// On peut ici éventuellement ajuster les angles canoniques en fonction de la face
-	// Si vous le souhaitez, vous pouvez laisser les angles canoniques "Top" et
-	// adapter via la transformation.
-	// Par exemple, pour WorldFaceBottom, vous pourriez conserver Yaw=90, Pitch=-15
-	// et laisser la transformation se charger de "retourner" la vue.
-	// Ici, nous partons du principe que le repère canonique correspond à WorldFaceTop.
-
 	cam.updateVectors()
+	cam.Frustum = NewFrustum()
 }
 
 //////////////////////////////////////////////////////////
@@ -279,13 +302,6 @@ func (cam *Camera) Update(window *glfw.Window, deltaTime float32) {
 		cam.MoveSpeed = 5
 	}
 
-	if cam.FitWorld {
-		newFace := cam.GetDynamicCurrentWorldFaceByPosition(float32(len(cam.World.Chunks) * 16))
-		if newFace != cam.CurrentWorldFace {
-			cam.StartFaceSwap(newFace)
-		}
-	}
-
 	cam.updateVectors()
 }
 
@@ -439,4 +455,8 @@ func (cam *Camera) GetDynamicCurrentWorldFaceByPosition(_ float32) WorldFace {
 	}
 
 	return candidate
+}
+
+func (c *Camera) UpdateFrustum(projection mgl32.Mat4) {
+	c.Frustum.Update(c.GetViewMatrix(), projection)
 }
