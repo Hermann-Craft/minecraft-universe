@@ -71,7 +71,7 @@ func LoadShader(name string) (*Shader, error) {
 		return nil, fmt.Errorf("failed to create vertex shader: %v", err)
 	}
 
-	vertexShaderSource, free := gl.Strs(defaultVertSourceString)
+	vertexShaderSource, free := gl.Strs(defaultVertSourceString + " uniform vec3 highlightColor;")
 	gl.ShaderSource(vertexShader, 1, vertexShaderSource, nil)
 	free()
 	if err := checkGLError(); err != nil {
@@ -106,7 +106,7 @@ func LoadShader(name string) (*Shader, error) {
 		return nil, fmt.Errorf("failed to create fragment shader: %v", err)
 	}
 
-	fragmentShaderSource, free := gl.Strs(defaultFragSourceString)
+	fragmentShaderSource, free := gl.Strs(defaultFragSourceString + " uniform vec3 highlightColor;")
 	gl.ShaderSource(fragmentShader, 1, fragmentShaderSource, nil)
 	free()
 	if err := checkGLError(); err != nil {

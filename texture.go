@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"image"
-	"image/draw"
+	imagedraw "image/draw"
+	"image/png"
 	_ "image/png"
 	"log"
 	"os"
@@ -10,11 +12,12 @@ import (
 	"sync"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
+	xdraw "golang.org/x/image/draw"
 )
 
 const (
-	AtlasSize      = 1024 // Taille de l'atlas en pixels
-	TextureSize    = 16   // Taille de chaque texture en pixels
+	AtlasSize      = 2048 // Taille de l'atlas en pixels (2048 = 16 textures de 128x128 par ligne)
+	TextureSize    = 128  // Taille de chaque texture en pixels (128x128)
 	TexturesPerRow = AtlasSize / TextureSize
 )
 
@@ -50,8 +53,10 @@ func (a *TextureAtlas) init() {
 	// Charger toutes les textures
 	textureFiles := []string{
 		"grass_block_top.png",
+		"grass_side.png",
 		"sand.png",
 		"blackstone.png",
+		"dirt.png",
 		"polished_blackstone.png",
 		"deepslate_bricks.png",
 		"end_stone_bricks.png",
@@ -133,9 +138,20 @@ func (a *TextureAtlas) init() {
 			continue
 		}
 
+		// Vérifier la taille de l'image et redimensionner en pixel art si besoin
+		bounds := img.Bounds()
+		if bounds.Dx() != TextureSize || bounds.Dy() != TextureSize {
+			log.Printf("Redimensionnement pixel art: texture %s de %dx%d vers %dx%d",
+				filename, bounds.Dx(), bounds.Dy(), TextureSize, TextureSize)
+			// Créer une nouvelle image à la bonne taille
+			resized := image.NewRGBA(image.Rect(0, 0, TextureSize, TextureSize))
+			xdraw.NearestNeighbor.Scale(resized, resized.Bounds(), img, bounds, xdraw.Over, nil)
+			img = resized
+		}
+
 		// Ajouter la texture à l'atlas
-		draw.Draw(atlasImage, image.Rect(currentX, currentY, currentX+TextureSize, currentY+TextureSize),
-			img, image.Point{0, 0}, draw.Src)
+		imagedraw.Draw(atlasImage, image.Rect(currentX, currentY, currentX+TextureSize, currentY+TextureSize),
+			img, image.Point{0, 0}, imagedraw.Src)
 
 		// Enregistrer la position de la texture
 		a.textures[filename] = img
@@ -147,6 +163,13 @@ func (a *TextureAtlas) init() {
 			currentX = 0
 			currentY += TextureSize
 		}
+
+		log.Printf("Texture %s ajoutée à l'atlas en position (%d, %d)", filename, currentX-TextureSize, currentY)
+	}
+
+	// Sauvegarder l'atlas pour vérification
+	if err := saveAtlasImage(atlasImage, "atlas_debug.png"); err != nil {
+		log.Printf("Erreur lors de la sauvegarde de l'atlas: %v", err)
 	}
 
 	// Créer la texture OpenGL
@@ -171,6 +194,25 @@ func (a *TextureAtlas) init() {
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(atlasImage.Pix),
 	)
+
+	log.Printf("Atlas de textures créé avec succès (taille: %dx%d, textures: %dx%d)",
+		AtlasSize, AtlasSize, TextureSize, TextureSize)
+}
+
+// saveAtlasImage sauvegarde l'image de l'atlas pour vérification
+func saveAtlasImage(img *image.RGBA, filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("erreur lors de la création du fichier %s: %v", filename, err)
+	}
+	defer file.Close()
+
+	if err := png.Encode(file, img); err != nil {
+		return fmt.Errorf("erreur lors de l'encodage de l'atlas en PNG: %v", err)
+	}
+
+	log.Printf("Atlas sauvegardé dans %s", filename)
+	return nil
 }
 
 // GetTextureCoords retourne les coordonnées de texture pour une texture donnée

@@ -94,6 +94,73 @@ var (
 	}
 )
 
+var highlightVAO, highlightVBO, highlightEBO uint32
+
+var highlightCubeVertices = []float32{
+	0, 0, 0,
+	1, 0, 0,
+	1, 1, 0,
+	0, 1, 0,
+	0, 0, 1,
+	1, 0, 1,
+	1, 1, 1,
+	0, 1, 1,
+}
+
+var highlightCubeIndices = []uint32{
+	0, 1, 1, 2, 2, 3, 3, 0, // bas
+	4, 5, 5, 6, 6, 7, 7, 4, // haut
+	0, 4, 1, 5, 2, 6, 3, 7, // verticales
+}
+
+func InitHighlightCube() {
+	gl.GenVertexArrays(1, &highlightVAO)
+	gl.GenBuffers(1, &highlightVBO)
+	gl.GenBuffers(1, &highlightEBO)
+
+	gl.BindVertexArray(highlightVAO)
+	gl.BindBuffer(gl.ARRAY_BUFFER, highlightVBO)
+	gl.BufferData(gl.ARRAY_BUFFER, len(highlightCubeVertices)*4, gl.Ptr(highlightCubeVertices), gl.STATIC_DRAW)
+
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, highlightEBO)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(highlightCubeIndices)*4, gl.Ptr(highlightCubeIndices), gl.STATIC_DRAW)
+
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
+
+	gl.BindVertexArray(0)
+}
+
+func DrawBlockHighlight(x, y, z float32, shaderProgram uint32) {
+	gl.UseProgram(shaderProgram)
+	colorLoc := gl.GetUniformLocation(shaderProgram, gl.Str("highlightColor\x00"))
+	modelLoc := gl.GetUniformLocation(shaderProgram, gl.Str("model\x00"))
+
+	gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+	gl.LineWidth(1.0)
+	for i, scale := range []float32{1.12, 1.07, 1.00} {
+		var color [3]float32
+		switch i {
+		case 0:
+			color = [3]float32{1, 1, 0.3} // halo large, pâle
+		case 1:
+			color = [3]float32{1, 1, 0.6} // halo moyen
+		case 2:
+			color = [3]float32{1, 1, 0} // contour vif
+		}
+		if colorLoc != -1 {
+			gl.Uniform3f(colorLoc, color[0], color[1], color[2])
+		}
+		model := mgl32.Translate3D(x, y, z).Mul4(mgl32.Scale3D(scale, scale, scale)).Mul4(mgl32.Translate3D((1-scale)/2, (1-scale)/2, (1-scale)/2))
+		gl.UniformMatrix4fv(modelLoc, 1, false, &model[0])
+		gl.BindVertexArray(highlightVAO)
+		gl.DrawElements(gl.LINES, int32(len(highlightCubeIndices)), gl.UNSIGNED_INT, nil)
+		gl.BindVertexArray(0)
+	}
+	gl.PolygonMode(gl.FRONT_AND_BACK, gl.FILL)
+	gl.LineWidth(1.0)
+}
+
 // GetTextureCoords retourne les coordonnées de texture pour un type de bloc donné
 func GetTextureCoords(blockType BlockType) (top, bottom, left, right, front, back [2]float32) {
 	switch blockType {

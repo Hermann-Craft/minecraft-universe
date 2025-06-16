@@ -1,0 +1,130 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Voici une **liste complète et structurée des principes fondamentaux** pour concevoir un **programme robuste, maintenable et évolutif**, que tu sois en programmation orientée objet, fonctionnelle ou même procédurale.
+
+---
+
+## 🧱 1. Principes de conception solides (Design Principles)
+
+### ✅ **SOLID (orienté objet)**
+
+* **S**ingle Responsibility Principle
+* **O**pen/Closed Principle
+* **L**iskov Substitution Principle
+* **I**nterface Segregation Principle
+* **D**ependency Inversion Principle
+
+> 💡 Objectif : rendre le code modulaire, testable, et maintenable.
+
+---
+
+## 🔒 2. Principes de robustesse
+
+### ✅ **Fail Fast**
+
+* Détecter les erreurs **le plus tôt possible** (ex: vérifier les arguments dans les fonctions).
+
+### ✅ **Validation systématique**
+
+* Toujours **valider les entrées** (user input, API, fichiers, etc.).
+
+### ✅ **Gestion rigoureuse des exceptions**
+
+* Utiliser des **try/catch/finally** de manière appropriée.
+* Ne **jamais masquer** une exception sans la traiter ou la logger.
+
+### ✅ **Immutabilité (si possible)**
+
+* Utiliser des objets immuables pour éviter les effets de bord.
+
+---
+
+## 📦 3. Principes d'organisation du code
+
+### ✅ **Séparation des préoccupations (Separation of Concerns)**
+
+* Chaque module/section de code doit gérer **une seule responsabilité**.
+
+### ✅ **DRY (Don't Repeat Yourself)**
+
+* Ne jamais dupliquer le code. Centraliser les logiques communes.
+
+---
+
+## 🔄 4. Principes de testabilité
+
+### ✅ **TDD (Test-Driven Development)**
+
+* Écrire les tests **avant** le code (quand possible).
+
+### ✅ **Code testable**
+
+* Utiliser des **fonctions pures**, des **dépendances injectées**, etc.
+
+### ✅ **Couverture de test suffisante**
+
+* Tests unitaires, tests d’intégration, tests end-to-end (selon contexte).
+
+---
+
+## 🧪 5. Principes de gestion des dépendances
+
+### ✅ **Inversion de dépendance / Injection de dépendance**
+
+* Ne pas instancier directement ses dépendances ; les recevoir de l’extérieur.
+
+### ✅ **Limiter le couplage**
+
+* Favoriser les **interfaces/abstractions** au lieu des classes concrètes.
+
+---
+
+## ⚙️ 6. Principes d’architecture
+
+### ✅ **Modularité**
+
+* Organiser l’application en modules ou packages **indépendants**.
+
+### ✅ **Isolation**
+
+* Chaque module doit **pouvoir évoluer sans casser les autres**.
+
+### ✅ **Architecture hexagonale / Clean Architecture** (avancé)
+
+* Couche métier au centre, découplée de la base de données ou du framework.
+
+---
+
+## 📂 7. Principes de lisibilité
+
+### ✅ **Code auto-descriptif**
+
+* Des noms de variables/classe/méthode **clairs, explicites, sans abréviations cryptiques**.
+
+### ✅ **Commentaires utiles**
+
+* Expliquer le **"pourquoi"** (pas le "comment" si le code est clair).
+
+---
+
+## 🔁 8. Principes de performance et fiabilité
+
+### ✅ **Profilage avant optimisation**
+
+* Ne pas optimiser sans **mesure concrète des performances**.
+
+### ✅ **Resilience**
+
+* Anticiper les **pannes réseau, indisponibilités, erreurs temporaires** (timeout, retry, fallback...).
+
+---
+
+## 🧠 9. Principe fondamental ultime : **Connaître les limites de son système**
+
+* Quels sont les points de défaillance ?
+* Que se passe-t-il si un composant devient lent ?
+* Comment réagit le programme à la montée en charge ?
+

@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Programmation orientée avenir : Réutilisabilité et Scalabilité
+
+Quand tu programmes, pense toujours à l'avenir de ton projet. Un bon code n'est pas seulement fonctionnel aujourd'hui, il doit aussi être facile à faire évoluer, à maintenir et à réutiliser demain.
+
+## Principes clés
+
+- **Réutilisabilité** : Conçois tes fonctions, modules et classes pour qu'ils puissent servir dans d'autres contextes ou projets. Privilégie la généralisation quand c'est pertinent.
+- **Scalabilité** : Prévois que ton système devra peut-être gérer plus de données, plus d'utilisateurs, ou de nouveaux cas d'usage. Évite les solutions "hardcodées" ou trop spécifiques.
+- **Modularité** : Découpe ton code en modules indépendants, bien définis, avec des interfaces claires.
+- **Abstraction** : Utilise des interfaces, des types abstraits, ou des patterns (ex : stratégie, fabrique) pour séparer le "quoi" du "comment".
+- **Documentation** : Commente et documente tes choix d'architecture, pour que d'autres (ou toi-même plus tard) comprennent comment étendre ou modifier le système.
+
+## Conseils concrets
+
+- Privilégie la composition à l'héritage.
+- Évite les dépendances circulaires.
+- Prévois des points d'extension (hooks, callbacks, interfaces).
+- Utilise des noms explicites et cohérents.
+- Écris des tests pour garantir la non-régression lors des évolutions.
+- Anticipe les besoins futurs sans sur-ingénierie : vise le "juste assez flexible".
+
+## Exemple
+
+**Mauvais :**
+```go
+// Fonction qui ne marche que pour un seul type de bloc
+func PlaceGrassBlock(x, y, z int) { ... }
+```
+
+**Bon :**
+```go
+// Fonction générique, réutilisable pour tous les types de blocs
+func PlaceBlock(blockType BlockType, x, y, z int) { ... }
+```
+
+## Conclusion
+
+Un code pensé pour l'avenir est un code qui dure, qui s'adapte, et qui facilite la vie de toute l'équipe. Prends toujours un moment pour réfléchir à la réutilisabilité et à la scalabilité de ce que tu écris !

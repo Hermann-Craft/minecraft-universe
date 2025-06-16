@@ -80,13 +80,37 @@ func (p *Planet) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation
 					float32(y) * 16,
 					float32(z) * 16,
 				}
+				boundaryFaces := []WorldFace{}
+				if x == 0 {
+					boundaryFaces = append(boundaryFaces, WorldFaceLeft)
+				}
+				if x == sizeX-1 {
+					boundaryFaces = append(boundaryFaces, WorldFaceRight)
+				}
+				if y == 0 {
+					boundaryFaces = append(boundaryFaces, WorldFaceBottom)
+				}
+				if y == sizeY-1 {
+					boundaryFaces = append(boundaryFaces, WorldFaceTop)
+				}
+				if z == 0 {
+					boundaryFaces = append(boundaryFaces, WorldFaceBack)
+				}
+				if z == sizeZ-1 {
+					boundaryFaces = append(boundaryFaces, WorldFaceFront)
+				}
 				log.Printf("Creating chunk at position (%d, %d, %d)", x, y, z)
-				chunk, err := NewChunk(globalPos, int64(x*1000+y*100+z))
+				chunk, err := NewChunk(globalPos, int64(x*1000+y*100+z), p)
 				if err != nil {
 					return err
 				}
 				chunk.TextureAtlas = textureAtlas
 				chunk.Planet = p // Associer la planète parente
+				chunk.BoundaryFaces = boundaryFaces
+
+				// Générer les blocs APRÈS avoir assigné les BoundaryFaces
+				chunk.GenerateBlocks()
+
 				p.Chunks[x][y][z] = chunk
 			}
 		}

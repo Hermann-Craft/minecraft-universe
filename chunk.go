@@ -142,6 +142,9 @@ type Chunk struct {
 
 	// Texture
 	TextureAtlas *TextureAtlas
+
+	// Faces auxquelles ce chunk appartient (pour la génération cubique)
+	BoundaryFaces []WorldFace
 }
 
 // Directions servant à vérifier les voisins pour chaque face
@@ -165,7 +168,6 @@ var faceVertices = map[string][]float32{
 		0, 0, 1, 0, 0, 0, 0, 1,
 		1, 0, 1, 1, 0, 0, 0, 1,
 		1, 1, 1, 1, 1, 0, 0, 1,
-
 		1, 1, 1, 1, 1, 0, 0, 1,
 		0, 1, 1, 0, 1, 0, 0, 1,
 		0, 0, 1, 0, 0, 0, 0, 1,
@@ -174,7 +176,6 @@ var faceVertices = map[string][]float32{
 		1, 0, 0, 0, 0, 0, 0, -1,
 		0, 0, 0, 1, 0, 0, 0, -1,
 		0, 1, 0, 1, 1, 0, 0, -1,
-
 		0, 1, 0, 1, 1, 0, 0, -1,
 		1, 1, 0, 0, 1, 0, 0, -1,
 		1, 0, 0, 0, 0, 0, 0, -1,
@@ -183,7 +184,6 @@ var faceVertices = map[string][]float32{
 		1, 0, 1, 0, 0, 1, 0, 0,
 		1, 0, 0, 1, 0, 1, 0, 0,
 		1, 1, 0, 1, 1, 1, 0, 0,
-
 		1, 1, 0, 1, 1, 1, 0, 0,
 		1, 1, 1, 0, 1, 1, 0, 0,
 		1, 0, 1, 0, 0, 1, 0, 0,
@@ -192,25 +192,22 @@ var faceVertices = map[string][]float32{
 		0, 0, 0, 0, 0, -1, 0, 0,
 		0, 0, 1, 1, 0, -1, 0, 0,
 		0, 1, 1, 1, 1, -1, 0, 0,
-
 		0, 1, 1, 1, 1, -1, 0, 0,
 		0, 1, 0, 0, 1, -1, 0, 0,
 		0, 0, 0, 0, 0, -1, 0, 0,
 	},
 	"top": {
-		0, 1, 1, 0, 0, 0, 1, 0,
-		1, 1, 1, 1, 0, 0, 1, 0,
-		1, 1, 0, 1, 1, 0, 1, 0,
-
-		1, 1, 0, 1, 1, 0, 1, 0,
-		0, 1, 0, 0, 1, 0, 1, 0,
-		0, 1, 1, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 1, 0, 1, 0, 1, 0,
+		1, 1, 1, 1, 1, 0, 1, 0,
+		1, 1, 1, 1, 1, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
 	},
 	"bottom": {
 		0, 0, 0, 0, 0, 0, -1, 0,
 		1, 0, 0, 1, 0, 0, -1, 0,
 		1, 0, 1, 1, 1, 0, -1, 0,
-
 		1, 0, 1, 1, 1, 0, -1, 0,
 		0, 0, 1, 0, 1, 0, -1, 0,
 		0, 0, 0, 0, 0, 0, -1, 0,
@@ -247,11 +244,12 @@ func fractalNoise2D(p *perlin.Perlin, x, z float64, octaves int, persistence, la
 
 // NewChunk crée un nouveau chunk à la position spécifiée.
 // Retourne une erreur si l'initialisation échoue.
-func NewChunk(globalPosCentered mgl32.Vec3, seed int64) (*Chunk, error) {
+func NewChunk(globalPosCentered mgl32.Vec3, seed int64, planet *Planet) (*Chunk, error) {
 	chunk := &Chunk{
 		Identifier: &goecs.Identifier{Namespace: "core", Path: "chunk"},
 		Position:   &globalPosCentered,
 		Rotation:   &mgl32.Quat{W: 1, V: mgl32.Vec3{0, 0, 0}},
+		Planet:     planet,
 	}
 
 	// Charger le shader
@@ -261,8 +259,8 @@ func NewChunk(globalPosCentered mgl32.Vec3, seed int64) (*Chunk, error) {
 	}
 	chunk.shader = shader
 
-	// Générer les blocs
-	chunk.GenerateBlocks()
+	// Ne pas générer les blocs ici, ils seront générés après l'assignation des BoundaryFaces
+	// chunk.GenerateBlocks()
 
 	// Ne pas générer le mesh ici, il sera généré par les workers
 	chunk.isInit = true
@@ -307,54 +305,6 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-func (c *Chunk) Init(identifier goecs.Identifier, position mgl32.Vec3, rotation mgl32.Quat) error {
-	c.Identifier = &identifier
-	c.Position = &position
-	c.Rotation = &rotation
-
-	// Charger le shader seulement s'il n'est pas déjà chargé
-	if c.shader == nil {
-		var err error
-		c.shader, err = LoadShader("default")
-		if err != nil {
-			log.Printf("Failed to load shader: %v", err)
-			return fmt.Errorf("failed to load shader: %v", err)
-		}
-	}
-
-	// Charger la texture
-	gl.GenTextures(1, &c.texture)
-	gl.BindTexture(gl.TEXTURE_2D, c.texture)
-
-	// Paramètres de la texture
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-
-	// Pour l'instant, on utilise une texture de test (carré blanc)
-	pixels := []uint8{
-		255, 255, 255, 255,
-		255, 255, 255, 255,
-		255, 255, 255, 255,
-		255, 255, 255, 255,
-	}
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(pixels))
-	gl.GenerateMipmap(gl.TEXTURE_2D)
-
-	// Générer les blocs
-	c.GenerateBlocks()
-
-	// Générer le mesh
-	c.GenerateMesh()
-
-	// Initialiser les buffers OpenGL
-	c.setupMesh()
-
-	c.isInit = true
-	return nil
-}
-
 func (c *Chunk) isEdgeChunk() bool {
 	if c.Planet == nil {
 		return false // Par défaut, pas d'info
@@ -371,42 +321,183 @@ func (c *Chunk) isEdgeChunk() bool {
 }
 
 func (c *Chunk) GenerateBlocks() {
-	if c.isEdgeChunk() {
-		// Relief avec noise sur les chunks d'extrémité
-		p := perlin.NewPerlin(2, 2, 3, 42)
-		for x := 0; x < ChunkSize; x++ {
+	// Paramètres de génération
+	planetSize := c.Planet.Size
+
+	// Paramètres de base pour le bruit Perlin
+	alpha, beta, nOctaves := 2.0, 2.0, int32(4)
+	p := perlin.NewPerlin(alpha, beta, nOctaves, 42) // seed fixe pour tests
+
+	// Taille totale de la planète en blocs
+	totalSizeX := float64(planetSize.X()) * float64(ChunkSize)
+	totalSizeY := float64(planetSize.Y()) * float64(ChunkSize)
+	totalSizeZ := float64(planetSize.Z()) * float64(ChunkSize)
+
+	// Utiliser la plus petite dimension pour éviter des valeurs trop grandes
+	scaleFactor := math.Min(totalSizeX, math.Min(totalSizeY, totalSizeZ))
+
+	// Paramètres ajustés pour un meilleur relief
+	base := 10.0       // Distance de base depuis le bord (en blocs)
+	amplitude := 5.0   // Amplitude du relief (en blocs)
+	noiseScale := 20.0 // Échelle du noise
+
+	// Log pour debug
+	if c.Position.X() == 0 && c.Position.Y() == 0 && c.Position.Z() == 0 {
+		log.Printf("Génération chunk (0,0,0): scaleFactor=%f, base=%f, amplitude=%f", scaleFactor, base, amplitude)
+		log.Printf("BoundaryFaces: %v", c.BoundaryFaces)
+	}
+
+	// D'abord, initialiser tous les blocs comme solides
+	for x := 0; x < ChunkSize; x++ {
+		for y := 0; y < ChunkHeight; y++ {
 			for z := 0; z < ChunkSize; z++ {
-				globalX := x + int(c.Position.X())
-				globalZ := z + int(c.Position.Z())
-				height := int((fractalNoise2D(p, float64(globalX), float64(globalZ), 4, 0.5, 2.0) + 1) * float64(ChunkHeight*3/4))
-				if height < 1 {
-					height = 1
-				}
-				for y := 0; y < ChunkHeight; y++ {
-					globalY := y + int(c.Position.Y())
-					if globalY < height {
-						if globalY == height-1 {
-							c.Blocks[x][y][z] = Block{Type: BlockTypeGrass}
-						} else if globalY > height-5 {
-							c.Blocks[x][y][z] = Block{Type: BlockTypeDirt}
-						} else {
-							c.Blocks[x][y][z] = Block{Type: BlockTypeStone}
+				c.Blocks[x][y][z] = Block{Type: BlockTypeStone}
+			}
+		}
+	}
+
+	// Si le chunk n'a pas de faces de bord, le laisser plein
+	if len(c.BoundaryFaces) == 0 {
+		return
+	}
+
+	blocksCarved := 0
+
+	// Pour les chunks en boundary, sculpter le terrain
+	for x := 0; x < ChunkSize; x++ {
+		for y := 0; y < ChunkHeight; y++ {
+			for z := 0; z < ChunkSize; z++ {
+				// Position globale du bloc
+				globalX := float64(x) + float64(c.Position.X())
+				globalY := float64(y) + float64(c.Position.Y())
+				globalZ := float64(z) + float64(c.Position.Z())
+
+				shouldCarve := false
+
+				for _, face := range c.BoundaryFaces {
+					switch face {
+					case WorldFaceTop:
+						// Face supérieure : on garde les blocs près du sommet
+						distFromTop := totalSizeY - globalY
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromTop > threshold {
+							shouldCarve = true
 						}
-					} else {
-						c.Blocks[x][y][z] = Block{Type: BlockTypeAir}
+					case WorldFaceBottom:
+						// Face inférieure : on creuse depuis le bas
+						distFromBottom := globalY
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromBottom < threshold {
+							shouldCarve = true
+						}
+					case WorldFaceRight:
+						// Face droite : on creuse depuis la droite
+						distFromRight := totalSizeX - globalX
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromRight < threshold {
+							shouldCarve = true
+						}
+					case WorldFaceLeft:
+						// Face gauche : on creuse depuis la gauche
+						distFromLeft := globalX
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromLeft < threshold {
+							shouldCarve = true
+						}
+					case WorldFaceFront:
+						// Face avant : on creuse depuis l'avant
+						distFromFront := totalSizeZ - globalZ
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromFront < threshold {
+							shouldCarve = true
+						}
+					case WorldFaceBack:
+						// Face arrière : on creuse depuis l'arrière
+						distFromBack := globalZ
+						noiseValue := p.Noise3D(globalX/noiseScale, globalY/noiseScale, globalZ/noiseScale)
+						threshold := base + noiseValue*amplitude
+						if distFromBack < threshold {
+							shouldCarve = true
+						}
+					}
+
+					if shouldCarve {
+						break
+					}
+				}
+
+				// Si on doit sculpter (creuser), mettre de l'air
+				if shouldCarve {
+					c.Blocks[x][y][z] = Block{Type: BlockTypeAir}
+					blocksCarved++
+				}
+			}
+		}
+	}
+
+	// Log pour debug
+	if c.Position.X() == 0 && c.Position.Y() == 0 && c.Position.Z() == 0 {
+		log.Printf("Chunk (0,0,0): %d blocs sculptés sur %d", blocksCarved, ChunkSize*ChunkHeight*ChunkSize)
+	}
+
+	// Post-traitement : ajouter de l'herbe sur toutes les faces extérieures
+	grassAdded := 0
+	for x := 0; x < ChunkSize; x++ {
+		for y := 0; y < ChunkHeight; y++ {
+			for z := 0; z < ChunkSize; z++ {
+				if c.Blocks[x][y][z].Type == BlockTypeAir {
+					continue
+				}
+				// Pour chaque direction, vérifier si on est en bord de planète et exposé à l'air
+				for _, dir := range directions {
+					nx, ny, nz := x+dir.dx, y+dir.dy, z+dir.dz
+					globalX := int(c.Position.X()) + x
+					globalY := int(c.Position.Y()) + y
+					globalZ := int(c.Position.Z()) + z
+					isEdge := false
+					switch dir.name {
+					case "left":
+						isEdge = (globalX == 0)
+					case "right":
+						isEdge = (globalX == int(c.Planet.Size.X())*ChunkSize-1)
+					case "bottom":
+						isEdge = (globalY == 0)
+					case "top":
+						isEdge = (globalY == int(c.Planet.Size.Y())*ChunkSize-1)
+					case "back":
+						isEdge = (globalZ == 0)
+					case "front":
+						isEdge = (globalZ == int(c.Planet.Size.Z())*ChunkSize-1)
+					}
+					// Si on est en bord ET exposé à l'air
+					if isEdge &&
+						nx >= 0 && nx < ChunkSize &&
+						ny >= 0 && ny < ChunkHeight &&
+						nz >= 0 && nz < ChunkSize &&
+						c.Blocks[nx][ny][nz].Type == BlockTypeAir {
+						c.Blocks[x][y][z] = Block{Type: BlockTypeGrass}
+						grassAdded++
+						// Ajouter de la dirt "sous" l'herbe (vers l'intérieur de la planète)
+						ix, iy, iz := x-dir.dx, y-dir.dy, z-dir.dz
+						if ix >= 0 && ix < ChunkSize && iy >= 0 && iy < ChunkHeight && iz >= 0 && iz < ChunkSize {
+							if c.Blocks[ix][iy][iz].Type == BlockTypeStone {
+								c.Blocks[ix][iy][iz] = Block{Type: BlockTypeDirt}
+							}
+						}
+						break // On ne traite qu'une face par bloc
 					}
 				}
 			}
 		}
-	} else {
-		// Chunk interne : plein de blocs solides
-		for x := 0; x < ChunkSize; x++ {
-			for z := 0; z < ChunkSize; z++ {
-				for y := 0; y < ChunkHeight; y++ {
-					c.Blocks[x][y][z] = Block{Type: BlockTypeStone}
-				}
-			}
-		}
+	}
+
+	if c.Position.X() == 0 && c.Position.Y() == 0 && c.Position.Z() == 0 {
+		log.Printf("Chunk (0,0,0): %d blocs d'herbe ajoutés", grassAdded)
 	}
 }
 
@@ -420,7 +511,7 @@ func (c *Chunk) GenerateVertices() {
 	c.Vertices = make([]float32, 0)
 
 	for x := 0; x < ChunkSize; x++ {
-		for y := 0; y < ChunkSize; y++ {
+		for y := 0; y < ChunkHeight; y++ {
 			for z := 0; z < ChunkSize; z++ {
 				block := c.Blocks[x][y][z]
 				if block.Type == BlockTypeAir {
@@ -718,11 +809,77 @@ func (c *Chunk) Cleanup() {
 }
 
 func (c *Chunk) isFaceVisible(x, y, z, dx, dy, dz int) bool {
-	nx, ny, nz := x+dx, y+dy, z+dz
-	if nx < 0 || nx >= ChunkSize || ny < 0 || ny >= ChunkHeight || nz < 0 || nz >= ChunkSize {
-		return true // bord du chunk
+	// Calculer la position du bloc adjacent
+	adjacentX := x + dx
+	adjacentY := y + dy
+	adjacentZ := z + dz
+
+	// Si le bloc adjacent est dans le même chunk
+	if adjacentX >= 0 && adjacentX < ChunkSize &&
+		adjacentY >= 0 && adjacentY < ChunkHeight &&
+		adjacentZ >= 0 && adjacentZ < ChunkSize {
+		// Vérifier si le bloc adjacent est de l'air
+		return c.Blocks[adjacentX][adjacentY][adjacentZ].Type == BlockTypeAir
 	}
-	return c.Blocks[nx][ny][nz].Type == BlockTypeAir
+
+	// Si le bloc adjacent est dans un autre chunk
+	// Calculer la position du chunk actuel dans la grille de la planète
+	chunkX := int(c.Position.X()) / ChunkSize
+	chunkY := int(c.Position.Y()) / ChunkSize
+	chunkZ := int(c.Position.Z()) / ChunkSize
+
+	// Calculer quel chunk contient le bloc adjacent
+	neighborChunkX := chunkX
+	neighborChunkY := chunkY
+	neighborChunkZ := chunkZ
+
+	// Position du bloc dans le chunk voisin
+	neighborBlockX := adjacentX
+	neighborBlockY := adjacentY
+	neighborBlockZ := adjacentZ
+
+	// Ajuster les coordonnées du chunk et du bloc si on traverse une frontière
+	if adjacentX < 0 {
+		neighborChunkX--
+		neighborBlockX = ChunkSize - 1
+	} else if adjacentX >= ChunkSize {
+		neighborChunkX++
+		neighborBlockX = 0
+	}
+
+	if adjacentY < 0 {
+		neighborChunkY--
+		neighborBlockY = ChunkHeight - 1
+	} else if adjacentY >= ChunkHeight {
+		neighborChunkY++
+		neighborBlockY = 0
+	}
+
+	if adjacentZ < 0 {
+		neighborChunkZ--
+		neighborBlockZ = ChunkSize - 1
+	} else if adjacentZ >= ChunkSize {
+		neighborChunkZ++
+		neighborBlockZ = 0
+	}
+
+	// Vérifier si le chunk voisin existe dans la planète
+	if neighborChunkX >= 0 && neighborChunkX < int(c.Planet.Size.X()) &&
+		neighborChunkY >= 0 && neighborChunkY < int(c.Planet.Size.Y()) &&
+		neighborChunkZ >= 0 && neighborChunkZ < int(c.Planet.Size.Z()) {
+
+		neighborChunk := c.Planet.Chunks[neighborChunkX][neighborChunkY][neighborChunkZ]
+		if neighborChunk != nil {
+			// Vérifier si le bloc dans le chunk voisin est de l'air
+			return neighborChunk.Blocks[neighborBlockX][neighborBlockY][neighborBlockZ].Type == BlockTypeAir
+		}
+		// Si le chunk voisin n'est pas encore chargé, on rend la face
+		return true
+	}
+
+	// Si on est en dehors des limites de la planète
+	// On est sur une face extérieure de la planète, donc on rend la face
+	return true
 }
 
 // GetTextureUV retourne les coordonnées UV pour un type de bloc et une face, selon l'atlas
@@ -738,10 +895,14 @@ func (c *Chunk) GetTextureUV(t BlockType, face string) (float32, float32, float3
 func getTextureNameForBlockFace(t BlockType, face string) string {
 	switch t {
 	case BlockTypeGrass:
-		if face == "top" {
+		switch face {
+		case "top":
 			return "grass_block_top.png"
+		case "bottom":
+			return "dirt.png"
+		default:
+			return "grass_block_side.png"
 		}
-		return "grass_block_top.png" // à adapter pour d'autres faces
 	case BlockTypeDirt:
 		return "dirt.png"
 	case BlockTypeStone:
@@ -749,4 +910,44 @@ func getTextureNameForBlockFace(t BlockType, face string) string {
 	default:
 		return "grass_block_top.png"
 	}
+}
+
+// RaycastBlock effectue un raycast depuis une position et une direction, et retourne le premier bloc solide touché
+// Retourne : chunk, coordonnées locales du bloc (bx, by, bz), et hit (bool)
+func RaycastBlock(origin, direction mgl32.Vec3, planet *Planet, maxDistance float32) (*Chunk, int, int, int, bool) {
+	step := float32(0.1) // précision du raycast
+	dir := direction.Normalize()
+	for t := float32(0); t < maxDistance; t += step {
+		pos := origin.Add(dir.Mul(t))
+		// Convertir la position globale en indices de chunk et de bloc
+		chunkX := int(pos.X()) / ChunkSize
+		chunkY := int(pos.Y()) / ChunkSize
+		chunkZ := int(pos.Z()) / ChunkSize
+		bx := int(pos.X()) % ChunkSize
+		by := int(pos.Y()) % ChunkHeight
+		bz := int(pos.Z()) % ChunkSize
+		if bx < 0 {
+			bx += ChunkSize
+		}
+		if by < 0 {
+			by += ChunkHeight
+		}
+		if bz < 0 {
+			bz += ChunkSize
+		}
+		// Vérifier les bornes
+		if chunkX < 0 || chunkY < 0 || chunkZ < 0 ||
+			chunkX >= int(planet.Size.X()) || chunkY >= int(planet.Size.Y()) || chunkZ >= int(planet.Size.Z()) {
+			continue
+		}
+		chunk := planet.Chunks[chunkX][chunkY][chunkZ]
+		if chunk == nil {
+			continue
+		}
+		block := chunk.Blocks[bx][by][bz]
+		if block.Type != BlockTypeAir {
+			return chunk, bx, by, bz, true
+		}
+	}
+	return nil, 0, 0, 0, false
 }

@@ -114,6 +114,8 @@ func (game *Game) Init() {
 	previousTime := time.Now()
 	startTime := previousTime
 
+	clickedLastFrame := false
+	InitHighlightCube()
 	for !game.window.ShouldClose() {
 		currentTime := time.Now()
 		elapsed := float64(currentTime.Sub(startTime).Seconds())
@@ -123,6 +125,23 @@ func (game *Game) Init() {
 		// UPDATE
 		game.Camera.Update(game.window, deltaTime)
 		planetEarth.Update(deltaTime)
+
+		// Gestion du clic gauche pour détruire un bloc
+		mousePressed := game.window.GetMouseButton(glfw.MouseButton1) == glfw.Press
+		if mousePressed && !clickedLastFrame {
+			// Raycast
+			chunk, bx, by, bz, hit := RaycastBlock(game.Camera.Position, game.Camera.Front, planetEarth, 8.0)
+			if hit && chunk != nil {
+				if chunk.Blocks[bx][by][bz].Type != BlockTypeAir {
+					chunk.Blocks[bx][by][bz] = Block{Type: BlockTypeAir}
+					chunk.isMeshGenerated = false
+					chunk.GenerateVertices()
+					chunk.GenerateMesh()
+					log.Printf("Bloc détruit en chunk (%d,%d,%d) bloc (%d,%d,%d)", int(chunk.Position.X())/ChunkSize, int(chunk.Position.Y())/ChunkHeight, int(chunk.Position.Z())/ChunkSize, bx, by, bz)
+				}
+			}
+		}
+		clickedLastFrame = mousePressed
 
 		// RENDER
 		// Nettoyage et rendu de la scène
@@ -134,6 +153,18 @@ func (game *Game) Init() {
 		game.Camera.UpdateFrustum(projection)
 
 		universe.Render(elapsed)
+
+		// Highlight
+		var highlightChunk *Chunk
+		var highlightBx, highlightBy, highlightBz int
+		var highlightHit bool
+		highlightChunk, highlightBx, highlightBy, highlightBz, highlightHit = RaycastBlock(game.Camera.Position, game.Camera.Front, planetEarth, 8.0)
+		if highlightHit && highlightChunk != nil {
+			x := float32(int(highlightChunk.Position.X()) + highlightBx)
+			y := float32(int(highlightChunk.Position.Y()) + highlightBy)
+			z := float32(int(highlightChunk.Position.Z()) + highlightBz)
+			DrawBlockHighlight(x, y, z, highlightChunk.shader.ID)
+		}
 
 		// CLEAN
 		game.window.SwapBuffers()
