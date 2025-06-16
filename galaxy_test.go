@@ -24,9 +24,14 @@ func TestAddPlanet(test *testing.T) {
 		goecs.Identifier{Namespace: "unicube", Path: "planetEarth"},
 		mgl32.Vec3{0, 0, 0},
 		mgl32.Quat{W: 0, V: mgl32.Vec3{0, 0, 0}},
+		mgl32.Vec3{3, 3, 3},
 	)
 
 	if err := galaxyTest.AddPlanet(planetTest); err != nil {
 		test.Fatal(err)
 	}
+}
+
+func TestGalaxyInit(t *testing.T) {
+	// TODO: Test Galaxy.Init logic
 }

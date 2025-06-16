@@ -40,3 +40,7 @@ func TestGetGalaxyById(test *testing.T) {
 		test.Fatal("The universe should contain a galaxy but it did not")
 	}
 }
+
+func TestUniverseInit(t *testing.T) {
+	// TODO: Test Universe.Init logic
+}

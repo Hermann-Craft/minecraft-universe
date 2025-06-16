@@ -28,3 +28,7 @@ func TestGetGalaxyPosition(test *testing.T) {
 	// Universe.Pos == 0,0,0
 	// Galaxy.Pos ==
 }
+
+func TestCameraInit(t *testing.T) {
+	// TODO: Test Camera.Init logic
+}
