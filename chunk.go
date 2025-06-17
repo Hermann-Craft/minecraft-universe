@@ -320,6 +320,110 @@ func (c *Chunk) isEdgeChunk() bool {
 		chunkZ == 0 || chunkZ == sizeZ-1
 }
 
+// Ajoute de l'herbe sur la surface extérieure d'une face du chunk
+func (c *Chunk) addGrassOnFace(face WorldFace) {
+	// Pour chaque face, on parcourt la surface extérieure et on pose de l'herbe sur le premier bloc solide rencontré depuis l'extérieur
+	switch face {
+	case WorldFaceTop:
+		for x := 0; x < ChunkSize; x++ {
+			for z := 0; z < ChunkSize; z++ {
+				for y := ChunkHeight - 1; y >= 0; y-- {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							// Mettre de la dirt juste en dessous si c'est de la stone
+							if y > 0 && c.Blocks[x][y-1][z].Type == BlockTypeStone {
+								c.Blocks[x][y-1][z].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	case WorldFaceBottom:
+		for x := 0; x < ChunkSize; x++ {
+			for z := 0; z < ChunkSize; z++ {
+				for y := 0; y < ChunkHeight; y++ {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							if y < ChunkHeight-1 && c.Blocks[x][y+1][z].Type == BlockTypeStone {
+								c.Blocks[x][y+1][z].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	case WorldFaceLeft:
+		for y := 0; y < ChunkHeight; y++ {
+			for z := 0; z < ChunkSize; z++ {
+				for x := 0; x < ChunkSize; x++ {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							if x < ChunkSize-1 && c.Blocks[x+1][y][z].Type == BlockTypeStone {
+								c.Blocks[x+1][y][z].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	case WorldFaceRight:
+		for y := 0; y < ChunkHeight; y++ {
+			for z := 0; z < ChunkSize; z++ {
+				for x := ChunkSize - 1; x >= 0; x-- {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							if x > 0 && c.Blocks[x-1][y][z].Type == BlockTypeStone {
+								c.Blocks[x-1][y][z].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	case WorldFaceFront:
+		for x := 0; x < ChunkSize; x++ {
+			for y := 0; y < ChunkHeight; y++ {
+				for z := ChunkSize - 1; z >= 0; z-- {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							if z > 0 && c.Blocks[x][y][z-1].Type == BlockTypeStone {
+								c.Blocks[x][y][z-1].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	case WorldFaceBack:
+		for x := 0; x < ChunkSize; x++ {
+			for y := 0; y < ChunkHeight; y++ {
+				for z := 0; z < ChunkSize; z++ {
+					if c.Blocks[x][y][z].Type != BlockTypeAir {
+						if c.Blocks[x][y][z].Type != BlockTypeGrass {
+							c.Blocks[x][y][z].Type = BlockTypeGrass
+							if z < ChunkSize-1 && c.Blocks[x][y][z+1].Type == BlockTypeStone {
+								c.Blocks[x][y][z+1].Type = BlockTypeDirt
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+	}
+}
+
 func (c *Chunk) GenerateBlocks() {
 	// Paramètres de génération
 	planetSize := c.Planet.Size
@@ -446,58 +550,14 @@ func (c *Chunk) GenerateBlocks() {
 	}
 
 	// Post-traitement : ajouter de l'herbe sur toutes les faces extérieures
-	grassAdded := 0
-	for x := 0; x < ChunkSize; x++ {
-		for y := 0; y < ChunkHeight; y++ {
-			for z := 0; z < ChunkSize; z++ {
-				if c.Blocks[x][y][z].Type == BlockTypeAir {
-					continue
-				}
-				// Pour chaque direction, vérifier si on est en bord de planète et exposé à l'air
-				for _, dir := range directions {
-					nx, ny, nz := x+dir.dx, y+dir.dy, z+dir.dz
-					globalX := int(c.Position.X()) + x
-					globalY := int(c.Position.Y()) + y
-					globalZ := int(c.Position.Z()) + z
-					isEdge := false
-					switch dir.name {
-					case "left":
-						isEdge = (globalX == 0)
-					case "right":
-						isEdge = (globalX == int(c.Planet.Size.X())*ChunkSize-1)
-					case "bottom":
-						isEdge = (globalY == 0)
-					case "top":
-						isEdge = (globalY == int(c.Planet.Size.Y())*ChunkSize-1)
-					case "back":
-						isEdge = (globalZ == 0)
-					case "front":
-						isEdge = (globalZ == int(c.Planet.Size.Z())*ChunkSize-1)
-					}
-					// Si on est en bord ET exposé à l'air
-					if isEdge &&
-						nx >= 0 && nx < ChunkSize &&
-						ny >= 0 && ny < ChunkHeight &&
-						nz >= 0 && nz < ChunkSize &&
-						c.Blocks[nx][ny][nz].Type == BlockTypeAir {
-						c.Blocks[x][y][z] = Block{Type: BlockTypeGrass}
-						grassAdded++
-						// Ajouter de la dirt "sous" l'herbe (vers l'intérieur de la planète)
-						ix, iy, iz := x-dir.dx, y-dir.dy, z-dir.dz
-						if ix >= 0 && ix < ChunkSize && iy >= 0 && iy < ChunkHeight && iz >= 0 && iz < ChunkSize {
-							if c.Blocks[ix][iy][iz].Type == BlockTypeStone {
-								c.Blocks[ix][iy][iz] = Block{Type: BlockTypeDirt}
-							}
-						}
-						break // On ne traite qu'une face par bloc
-					}
-				}
-			}
-		}
+	// (ancienne logique supprimée, remplacée par addGrassOnFace)
+	for _, face := range c.BoundaryFaces {
+		c.addGrassOnFace(face)
 	}
 
+	// Log pour debug
 	if c.Position.X() == 0 && c.Position.Y() == 0 && c.Position.Z() == 0 {
-		log.Printf("Chunk (0,0,0): %d blocs d'herbe ajoutés", grassAdded)
+		log.Printf("Chunk (0,0,0): génération terminée")
 	}
 }
 
