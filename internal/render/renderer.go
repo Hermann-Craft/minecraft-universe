@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/hermann-craft/unicube/internal/core/geom"
@@ -74,7 +74,29 @@ func (renderer *Renderer) setupOpenGL() error {
 		return fmt.Errorf("failed to initialize OpenGL: %w", err)
 	}
 
-	log.Printf("OpenGL Version: %s", gl.GoStr(gl.GetString(gl.VERSION)))
+	// Logs détaillés pour la compatibilité
+	glVersion := gl.GoStr(gl.GetString(gl.VERSION))
+	glRenderer := gl.GoStr(gl.GetString(gl.RENDERER))
+	glVendor := gl.GoStr(gl.GetString(gl.VENDOR))
+	glslVersion := gl.GoStr(gl.GetString(gl.SHADING_LANGUAGE_VERSION))
+
+	log.Printf("OpenGL Version: %s", glVersion)
+	log.Printf("OpenGL Renderer: %s", glRenderer)
+	log.Printf("OpenGL Vendor: %s", glVendor)
+	log.Printf("GLSL Version: %s", glslVersion)
+
+	// Vérification de la compatibilité OpenGL 3.3
+	var majorVersion, minorVersion int32
+	gl.GetIntegerv(gl.MAJOR_VERSION, &majorVersion)
+	gl.GetIntegerv(gl.MINOR_VERSION, &minorVersion)
+	log.Printf("OpenGL Context Version: %d.%d", majorVersion, minorVersion)
+
+	if majorVersion < 3 || (majorVersion == 3 && minorVersion < 3) {
+		log.Printf("WARNING: OpenGL 3.3+ required, but only %d.%d available", majorVersion, minorVersion)
+		return fmt.Errorf("OpenGL 3.3 or higher required, but only %d.%d available", majorVersion, minorVersion)
+	}
+
+	log.Println("✅ OpenGL 3.3+ compatibility confirmed")
 
 	// Activer les fonctionnalités
 	gl.Enable(gl.DEPTH_TEST)

@@ -52,18 +52,18 @@ type PerformanceConfig struct {
 func LoadConfig() *Config {
 	return &Config{
 		Window: WindowConfig{
-			Width:      getEnvInt("WINDOW_WIDTH", 800),
-			Height:     getEnvInt("WINDOW_HEIGHT", 600),
-			Title:      getEnvString("WINDOW_TITLE", "Minecraft Clone Go"),
+			Width:      getEnvInt("WINDOW_WIDTH", 1920),
+			Height:     getEnvInt("WINDOW_HEIGHT", 1080),
+			Title:      getEnvString("WINDOW_TITLE", "Minecraft Universe - OpenGL 3.3 Compatible"),
 			Fullscreen: getEnvBool("WINDOW_FULLSCREEN", false),
 			Resizable:  getEnvBool("WINDOW_RESIZABLE", true),
 		},
 		Graphics: GraphicsConfig{
-			VSync:       getEnvBool("GRAPHICS_VSYNC", true),
+			VSync:       getEnvBool("WINDOW_VSYNC", true),
 			MSAA:        getEnvInt("GRAPHICS_MSAA", 4),
 			MaxFPS:      getEnvInt("GRAPHICS_MAX_FPS", 60),
-			OpenGLMajor: getEnvInt("GRAPHICS_OPENGL_MAJOR", 4),
-			OpenGLMinor: getEnvInt("GRAPHICS_OPENGL_MINOR", 6),
+			OpenGLMajor: getEnvInt("GRAPHICS_OPENGL_MAJOR", 3),
+			OpenGLMinor: getEnvInt("GRAPHICS_OPENGL_MINOR", 3),
 		},
 		World: WorldConfig{
 			ChunkSize:   getEnvInt("WORLD_CHUNK_SIZE", 16),

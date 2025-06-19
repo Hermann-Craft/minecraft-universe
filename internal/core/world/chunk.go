@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/aquilax/go-perlin"
-	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	goecs "github.com/oneforx/go-ecs"
 
