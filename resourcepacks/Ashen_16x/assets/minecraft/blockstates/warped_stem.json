@@ -1,0 +1,49 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/warped_stem", "weight": 20},
+			{"model": "block/warped_stem1", "weight": 10},
+			{"model": "block/warped_stem2", "weight": 25},
+			{"model": "block/warped_stem3", "weight": 35},
+			{"model": "block/warped_stem4", "weight": 30},
+			{"model": "block/warped_stem5", "weight": 25},
+			{"model": "block/warped_stem6", "weight": 25},
+			{"model": "block/warped_stem7", "weight": 5},
+			{"model": "block/warped_stem8", "weight": 5},
+			{"model": "block/warped_stem9", "weight": 5},
+			{"model": "block/warped_stem10", "weight": 5},
+			{"model": "block/warped_stem11", "weight": 20},
+			{"model": "block/warped_stem12", "weight": 10}
+		],
+		"axis=z": [
+			{"model": "block/warped_stem", "x": 90, "weight": 20},
+			{"model": "block/warped_stem1", "x": 90, "weight": 10},
+			{"model": "block/warped_stem2", "x": 90, "weight": 25},
+			{"model": "block/warped_stem3", "x": 90, "weight": 35},
+			{"model": "block/warped_stem4", "x": 90, "weight": 30},
+			{"model": "block/warped_stem5", "x": 90, "weight": 25},
+			{"model": "block/warped_stem6", "x": 90, "weight": 25},
+			{"model": "block/warped_stem7", "x": 90, "weight": 5},
+			{"model": "block/warped_stem8", "x": 90, "weight": 5},
+			{"model": "block/warped_stem9", "x": 90, "weight": 5},
+			{"model": "block/warped_stem10", "x": 90, "weight": 5},
+			{"model": "block/warped_stem11", "x": 90, "weight": 20},
+			{"model": "block/warped_stem12", "x": 90, "weight": 10}
+		],
+		"axis=x": [
+			{"model": "block/warped_stem", "x": 90, "y": 90, "weight": 20},
+			{"model": "block/warped_stem1", "x": 90, "y": 90, "weight": 10},
+			{"model": "block/warped_stem2", "x": 90, "y": 90, "weight": 25},
+			{"model": "block/warped_stem3", "x": 90, "y": 90, "weight": 35},
+			{"model": "block/warped_stem4", "x": 90, "y": 90, "weight": 30},
+			{"model": "block/warped_stem5", "x": 90, "y": 90, "weight": 25},
+			{"model": "block/warped_stem6", "x": 90, "y": 90, "weight": 25},
+			{"model": "block/warped_stem7", "x": 90, "y": 90, "weight": 5},
+			{"model": "block/warped_stem8", "x": 90, "y": 90, "weight": 5},
+			{"model": "block/warped_stem9", "x": 90, "y": 90, "weight": 5},
+			{"model": "block/warped_stem10", "x": 90, "y": 90, "weight": 5},
+			{"model": "block/warped_stem11", "x": 90, "y": 90, "weight": 20},
+			{"model": "block/warped_stem12", "x": 90, "y": 90, "weight": 10}
+		]
+	}
+}

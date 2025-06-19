@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"type=double": [
+			{"model": "block/stone_slab_double"}
+		],
+		"type=bottom": [
+			{"model": "block/stone_slab"},
+			{"model": "block/stone_slab1"},
+			{"model": "block/stone_slab2"},
+			{"model": "block/stone_slab3"}
+		],
+		"type=top": [
+			{"model": "block/stone_slab_top"},
+			{"model": "block/stone_slab_top1"},
+			{"model": "block/stone_slab_top2"},
+			{"model": "block/stone_slab_top3"}
+		]
+	}
+}

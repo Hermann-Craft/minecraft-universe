@@ -1,0 +1,22 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/spruce_leaves", "weight": 5},
+			{"model": "block/spruce_leaves1", "weight": 5},
+			{"model": "block/spruce_leaves2", "weight": 1},
+			{"model": "block/spruce_leaves3", "weight": 1},
+			{"model": "block/spruce_leaves4", "weight": 5},
+			{"model": "block/spruce_leaves5", "weight": 5},
+			{"model": "block/spruce_leaves6", "weight": 1},
+			{"model": "block/spruce_leaves7", "weight": 1},
+			{"model": "block/spruce_leaves", "y": 90, "weight": 5},
+			{"model": "block/spruce_leaves1", "y": 90, "weight": 5},
+			{"model": "block/spruce_leaves2", "y": 90, "weight": 1},
+			{"model": "block/spruce_leaves3", "y": 90, "weight": 1},
+			{"model": "block/spruce_leaves4", "y": 90, "weight": 5},
+			{"model": "block/spruce_leaves5", "y": 90, "weight": 5},
+			{"model": "block/spruce_leaves6", "y": 90, "weight": 1},
+			{"model": "block/spruce_leaves7", "y": 90, "weight": 1}
+		]
+	}
+}

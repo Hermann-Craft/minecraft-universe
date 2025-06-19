@@ -1,0 +1,14 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/red_sand", "weight": 5},
+			{"model": "block/red_sand", "y": 180, "weight": 5},
+			{"model": "block/red_sand1", "weight": 2},
+			{"model": "block/red_sand1", "y": 180, "weight": 2},
+			{"model": "block/red_sand2", "weight": 3},
+			{"model": "block/red_sand2", "y": 180, "weight": 3},
+			{"model": "block/red_sand3", "weight": 1},
+			{"model": "block/red_sand3", "y": 180, "weight": 1}
+		]
+	}
+}

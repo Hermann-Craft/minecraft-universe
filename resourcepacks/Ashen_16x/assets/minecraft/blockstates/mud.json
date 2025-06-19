@@ -1,0 +1,11 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/mud"},
+			{"model": "block/mud1"},
+			{"model": "block/mud2"},
+			{"model": "block/mud3"},
+			{"model": "block/mud4"}
+		]
+	}
+}

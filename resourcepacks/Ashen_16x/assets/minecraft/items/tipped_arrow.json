@@ -1,0 +1,31 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:count",
+    "entries": [
+      {
+        "threshold": 0.25,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/tipped_arrow_stack",
+          "tints": [
+            {
+              "type": "minecraft:potion",
+              "default": -13083194
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/tipped_arrow",
+      "tints": [
+        {
+          "type": "minecraft:potion",
+          "default": -13083194
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/nether_brick_double"},
+			{"model": "block/nether_brick_double1"}
+		],
+		"type=bottom": [
+			{"model": "block/nether_brick_slab"},
+			{"model": "block/nether_brick_slab1"},
+			{"model": "block/nether_brick_slab2"},
+			{"model": "block/nether_brick_slab3"}
+		],
+		"type=top": [
+			{"model": "block/nether_brick_slab_top"},
+			{"model": "block/nether_brick_slab_top1"},
+			{"model": "block/nether_brick_slab_top2"},
+			{"model": "block/nether_brick_slab_top3"}
+		]
+	}
+}

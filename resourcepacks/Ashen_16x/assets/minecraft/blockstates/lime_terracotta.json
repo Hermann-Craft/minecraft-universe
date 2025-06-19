@@ -1,0 +1,11 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/lime_terracotta"},
+			{"model": "block/lime_terracotta1"},
+			{"model": "block/lime_terracotta2"},
+			{"model": "block/lime_terracotta3"},
+			{"model": "block/lime_terracotta4"}
+		]
+	}
+}

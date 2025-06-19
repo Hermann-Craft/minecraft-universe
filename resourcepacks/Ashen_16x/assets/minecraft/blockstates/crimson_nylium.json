@@ -1,0 +1,14 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/crimson_nylium"},
+			{"model": "block/crimson_nylium1"},
+			{"model": "block/crimson_nylium2"},
+			{"model": "block/crimson_nylium3"},
+			{"model": "block/crimson_nylium", "y": 90},
+			{"model": "block/crimson_nylium1", "y": 90},
+			{"model": "block/crimson_nylium2", "y": 90},
+			{"model": "block/crimson_nylium3", "y": 90}
+		]
+	}
+}

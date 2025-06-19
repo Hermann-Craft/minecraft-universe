@@ -1,0 +1,52 @@
+{
+	"variants": {
+		"moisture=0": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=1": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=2": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=3": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=4": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=5": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=6": [
+			{"model": "block/farmland"},
+			{"model": "block/farmland", "y": 180},
+			{"model": "block/farmland1"},
+			{"model": "block/farmland1", "y": 180}
+		],
+		"moisture=7": [
+			{"model": "block/farmland_moist"},
+			{"model": "block/farmland_moist", "y": 180},
+			{"model": "block/farmland_moist1"},
+			{"model": "block/farmland_moist1", "y": 180}
+		]
+	}
+}

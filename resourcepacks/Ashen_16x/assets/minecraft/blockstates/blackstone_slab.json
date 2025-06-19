@@ -1,0 +1,17 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/blackstone_double"}
+		],
+	"type=bottom": [
+			{"model": "block/blackstone_slab"},
+			{"model": "block/blackstone_slab1"},
+			{"model": "block/blackstone_slab2"}
+		],
+	"type=top": [
+			{"model": "block/blackstone_slab_top"},
+			{"model": "block/blackstone_slab_top1"},
+			{"model": "block/blackstone_slab_top2"}
+		]
+	}
+}

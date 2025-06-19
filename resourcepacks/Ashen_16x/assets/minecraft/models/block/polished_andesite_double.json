@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_column",
+	"textures": {
+		"particle": "block/polished_andesite",
+		"down": "block/polished_andesite",
+		"up": "block/polished_andesite",
+		"north": "block/polished_andesite_double",
+		"east": "block/polished_andesite_double",
+		"south": "block/polished_andesite_double",
+		"west": "block/polished_andesite_double"
+	}
+}

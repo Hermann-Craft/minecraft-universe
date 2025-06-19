@@ -1,0 +1,28 @@
+{
+	"variants": {
+		"axis=x": [
+			{"model": "block/deepslate","x": 90,"y": 90},
+			{"model": "block/deepslate_mirrored","x": 90, "y": 90},
+			{"model": "block/deepslate1","x": 90,"y": 90},
+			{"model": "block/deepslate_mirrored1","x": 90, "y": 90},
+			{"model": "block/deepslate2","x": 90,"y": 90},
+			{"model": "block/deepslate_mirrored2","x": 90, "y": 90}
+		],
+		"axis=y": [
+			{"model": "block/deepslate"},
+			{"model": "block/deepslate_mirrored"},
+			{"model": "block/deepslate1"},
+			{"model": "block/deepslate_mirrored1"},
+			{"model": "block/deepslate2"},
+			{"model": "block/deepslate_mirrored2"}
+		],
+		"axis=z": [
+			{"model": "block/deepslate","x": 90},
+			{"model": "block/deepslate_mirrored","x": 90},
+			{"model": "block/deepslate1","x": 90},
+			{"model": "block/deepslate_mirrored1","x": 90},
+			{"model": "block/deepslate2","x": 90},
+			{"model": "block/deepslate_mirrored2","x": 90}
+		]
+	}
+}

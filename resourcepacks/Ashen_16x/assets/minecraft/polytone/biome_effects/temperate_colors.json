@@ -1,0 +1,26 @@
+{ 
+	"targets": [
+		"minecraft:meadow",
+		"minecraft:old_growth_spruce_taiga", 
+		"minecraft:old_growth_pine_taiga", 
+		"minecraft:taiga", 
+		"minecraft:birch_forest", 
+		"minecraft:old_growth_birch_forest",
+		"minecraft:forest",
+		"minecraft:flower_forest",
+		"minecraft:dark_forest",
+		"minecraft:plains",
+		"minecraft:sunflower_plains",
+		"minecraft:swamp",
+		"minecraft:river",
+		"minecraft:beach",
+		"minecraft:stony_shore",
+		"minecraft:ocean",
+		"minecraft:deep_ocean",
+		"minecraft:lukewarm_ocean",
+		"minecraft:deep_lukewarm_ocean",
+		"minecraft:dripstone_caves"
+	],
+		"sky_color": 6860505,
+		"fog_color": 12832998
+}

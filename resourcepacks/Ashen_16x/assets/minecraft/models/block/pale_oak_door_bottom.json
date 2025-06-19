@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"4": "block/pale_oak_door_sides",
+		"5": "block/pale_oak_door_bottom",
+		"particle": "block/pale_oak_door_sides"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [3, 16, 16],
+			"faces": {
+				"north": {"uv": [3, 0, 6, 16], "texture": "#4"},
+				"east": {"uv": [16, 0, 0, 16], "texture": "#5"},
+				"south": {"uv": [6, 0, 9, 16], "rotation": 180, "texture": "#4"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#5"},
+				"up": {"uv": [12, 0, 15, 16], "texture": "#4"},
+				"down": {"uv": [12, 0, 15, 16], "texture": "#4"}
+			}
+		}
+	]
+}

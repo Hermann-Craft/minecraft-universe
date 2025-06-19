@@ -1,0 +1,12 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/dirt"},
+			{"model": "block/dirt1"},
+			{"model": "block/dirt1", "y": 180, "x": 180},
+			{"model": "block/dirt2"},
+			{"model": "block/dirt3"},
+			{"model": "block/dirt3", "y": 180, "x": 180}
+		]
+	}
+}

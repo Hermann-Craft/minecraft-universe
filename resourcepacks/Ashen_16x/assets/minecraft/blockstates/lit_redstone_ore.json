@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/lit_redstone_ore", "weight": 50},
+			{"model": "block/lit_redstone_ore1", "weight": 45},
+			{"model": "block/lit_redstone_ore2", "weight": 5}
+		]
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_directional1",
+	"textures": {
+		"particle": "block/acacia_log",
+		"down": "block/acacia_log_top",
+		"up": "block/acacia_log_top",
+		"north": "block/acacia_log",
+		"east": "block/acacia_log2",
+		"south": "block/acacia_log3",
+		"west": "block/acacia_log1"
+	}
+}

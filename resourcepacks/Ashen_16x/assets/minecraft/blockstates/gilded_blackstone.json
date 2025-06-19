@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/gilded_blackstone"},
+			{"model": "block/gilded_blackstone", "y": 90, "x": 90, "z": 90},
+			{"model": "block/gilded_blackstone", "y": 180, "x": 180, "z": 180},
+			{"model": "block/gilded_blackstone", "y": 270, "x": 270, "z": 270}
+		]
+	}
+}

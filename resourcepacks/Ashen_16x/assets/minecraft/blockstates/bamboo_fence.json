@@ -1,0 +1,21 @@
+{
+    "multipart": [
+        {   "apply": [{"model": "block/bamboo_fence_post"},
+		{"model": "block/bamboo_fence_post1"},
+		{"model": "block/bamboo_fence_post2"},
+		{"model": "block/bamboo_fence_post3"}	
+	]},
+        {   "when": { "north": "true" },
+            "apply": { "model": "block/bamboo_fence_side", "uvlock": false }
+        },
+        {   "when": { "east": "true" },
+            "apply": { "model": "block/bamboo_fence_side", "y": 90, "uvlock": false }
+        },
+        {   "when": { "south": "true" },
+            "apply": { "model": "block/bamboo_fence_side", "y": 180, "uvlock": false }
+        },
+        {   "when": { "west": "true" },
+            "apply": { "model": "block/bamboo_fence_side", "y": 270, "uvlock": false }
+        }
+    ]
+}

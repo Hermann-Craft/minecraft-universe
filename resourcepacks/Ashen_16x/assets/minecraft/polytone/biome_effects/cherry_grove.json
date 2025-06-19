@@ -1,0 +1,9 @@
+{
+	"targets": [
+		"minecraft:cherry_grove"
+	],
+		"sky_color": 6860505,
+		"fog_color": 12832998,
+		"grass_color": 7313765,
+		"foliage_color": 8633197
+}

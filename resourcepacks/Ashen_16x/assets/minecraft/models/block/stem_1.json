@@ -1,0 +1,28 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "block/stem_main1",
+		"4": "block/stem0",
+		"particle": "block/stem_main1"
+	},
+	"elements": [
+		{
+			"name": "stem",
+			"from": [0, -2, 8],
+			"to": [16, 14, 8],
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "leaves",
+			"from": [0, 1, 0],
+			"to": [16, 1, 16],
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#4"}
+			}
+		}
+	]
+}

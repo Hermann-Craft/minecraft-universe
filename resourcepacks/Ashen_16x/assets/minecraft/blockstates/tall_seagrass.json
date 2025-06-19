@@ -1,0 +1,40 @@
+{
+	"variants": {
+		"half=lower": [
+			{"model": "block/tall_seagrass_bottom"},
+			{"model": "block/tall_seagrass_bottom", "y": 90},
+			{"model": "block/tall_seagrass_bottom", "y": 180},
+			{"model": "block/tall_seagrass_bottom", "y": 270},
+			{"model": "block/tall_seagrass_bottom1"},
+			{"model": "block/tall_seagrass_bottom1", "y": 90},
+			{"model": "block/tall_seagrass_bottom1", "y": 180},
+			{"model": "block/tall_seagrass_bottom1", "y": 270},
+			{"model": "block/tall_seagrass_bottom2"},
+			{"model": "block/tall_seagrass_bottom2", "y": 90},
+			{"model": "block/tall_seagrass_bottom2", "y": 180},
+			{"model": "block/tall_seagrass_bottom2", "y": 270},
+			{"model": "block/tall_seagrass_bottom3"},
+			{"model": "block/tall_seagrass_bottom3", "y": 90},
+			{"model": "block/tall_seagrass_bottom3", "y": 180},
+			{"model": "block/tall_seagrass_bottom3", "y": 270}
+		],
+		"half=upper": [
+			{"model": "block/tall_seagrass_top"},
+			{"model": "block/tall_seagrass_top", "y": 90},
+			{"model": "block/tall_seagrass_top", "y": 180},
+			{"model": "block/tall_seagrass_top", "y": 270},
+			{"model": "block/tall_seagrass_top1"},
+			{"model": "block/tall_seagrass_top1", "y": 90},
+			{"model": "block/tall_seagrass_top1", "y": 180},
+			{"model": "block/tall_seagrass_top1", "y": 270},
+			{"model": "block/tall_seagrass_top2"},
+			{"model": "block/tall_seagrass_top2", "y": 90},
+			{"model": "block/tall_seagrass_top2", "y": 180},
+			{"model": "block/tall_seagrass_top2", "y": 270},
+			{"model": "block/tall_seagrass_top3"},
+			{"model": "block/tall_seagrass_top3", "y": 90},
+			{"model": "block/tall_seagrass_top3", "y": 180},
+			{"model": "block/tall_seagrass_top3", "y": 270}
+		]
+	}
+}

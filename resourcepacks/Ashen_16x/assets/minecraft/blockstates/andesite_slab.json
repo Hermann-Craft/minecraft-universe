@@ -1,0 +1,15 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/andesite_double"}
+		],
+	"type=bottom": [
+			{"model": "block/andesite_slab"},
+			{"model": "block/andesite_slab1"}
+		],
+	"type=top": [
+			{"model": "block/andesite_slab_top"},
+			{"model": "block/andesite_slab_top1"}
+		]
+	}
+}

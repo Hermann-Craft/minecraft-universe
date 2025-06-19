@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_column",
+	"textures": {
+		"particle": "block/polished_deepslate",
+		"down": "block/polished_deepslate",
+		"up": "block/polished_deepslate",
+		"north": "block/polished_deepslate_slab_side",
+		"east": "block/polished_deepslate_slab_side",
+		"south": "block/polished_deepslate_slab_side",
+		"west": "block/polished_deepslate_slab_side"
+	}
+}

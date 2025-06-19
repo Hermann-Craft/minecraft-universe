@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/raw_copper_block"},
+			{"model": "block/raw_copper_block", "y": 90, "z": 90, "x": 90},
+			{"model": "block/raw_copper_block", "y": 180, "z": 180, "x": 180},
+			{"model": "block/raw_copper_block", "y": 270, "z": 270, "x": 270}
+		]
+	}
+}

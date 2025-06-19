@@ -1,0 +1,14 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/potted_flowering_azalea_bush"},
+			{"model": "block/potted_flowering_azalea_bush1"},
+			{"model": "block/potted_flowering_azalea_bush", "y": 90},
+			{"model": "block/potted_flowering_azalea_bush1", "y": 90},
+			{"model": "block/potted_flowering_azalea_bush", "y": 180},
+			{"model": "block/potted_flowering_azalea_bush1", "y": 180},
+			{"model": "block/potted_flowering_azalea_bush", "y": 270},
+			{"model": "block/potted_flowering_azalea_bush1", "y": 270}
+		]
+	}
+}

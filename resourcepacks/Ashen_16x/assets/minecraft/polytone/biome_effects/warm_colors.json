@@ -1,0 +1,20 @@
+{ 
+	"targets": [
+		"minecraft:desert", 
+		"minecraft:savanna", 
+		"minecraft:savanna_plateau", 
+		"minecraft:windswept_savanna", 
+		"minecraft:badlands", 
+		"minecraft:wooded_badlands",
+		"minecraft:eroded_badlands",
+		"minecraft:jungle",
+		"minecraft:sparse_jungle",
+		"minecraft:bamboo_jungle",
+		"minecraft:stony_peaks",
+		"minecraft:mangrove_swamp",
+		"minecraft:warm_ocean",
+		"minecraft:lush_caves"
+	],
+	"sky_color": 7452633,
+	"fog_color": 12832998
+}

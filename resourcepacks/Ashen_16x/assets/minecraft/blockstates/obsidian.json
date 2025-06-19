@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/obsidian", "weight": 2},
+			{"model": "block/obsidian1", "weight": 1},
+			{"model": "block/obsidian2", "weight": 1}
+		]
+	}
+}

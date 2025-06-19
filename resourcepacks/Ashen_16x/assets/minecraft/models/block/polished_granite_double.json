@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_column",
+	"textures": {
+		"particle": "block/polished_granite",
+		"down": "block/polished_granite",
+		"up": "block/polished_granite",
+		"north": "block/polished_granite_double",
+		"east": "block/polished_granite_double",
+		"south": "block/polished_granite_double",
+		"west": "block/polished_granite_double"
+	}
+}

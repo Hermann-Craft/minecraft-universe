@@ -1,0 +1,102 @@
+{
+	"dye": {
+		"white": {
+			"diffuse": "eff0ed",
+			"firework": "eff0ed",
+			"text": "eff0ed"
+		},
+		"orange": {
+			"diffuse": "985f27",
+			"firework": "985f27",
+			"text": "985f27"
+		},
+		"magenta": {
+			"diffuse": "7a3584",
+			"firework": "7a3584",
+			"text": "7a3584"
+		},
+		"light_blue": {
+			"diffuse": "4f99b7",
+			"firework": "4f99b7",
+			"text": "4f99b7"
+		},
+		"yellow": {
+			"diffuse": "ab8c1d",
+			"firework": "ab8c1d",
+			"text": "ab8c1d"
+		},
+		"lime": {
+			"diffuse": "72a136",
+			"firework": "72a136",
+			"text": "72a136"
+		},
+		"pink": {
+			"diffuse": "c87cc0",
+			"firework": "c87cc0",
+			"text": "c87cc0"
+		},
+		"gray": {
+			"diffuse": "464442",
+			"firework": "464442",
+			"text": "464442"
+		},
+		"light_gray": {
+			"diffuse": "9c9997",
+			"firework": "9c9997",
+			"text": "9c9997"
+		},
+		"cyan": {
+			"diffuse": "387782",
+			"firework": "387782",
+			"text": "387782"
+		},
+		"purple": {
+			"diffuse": "52336b",
+			"firework": "52336b",
+			"text": "52336b"
+		},
+		"blue": {
+			"diffuse": "2b4482",
+			"firework": "2b4482",
+			"text": "2b4482"
+		},
+		"brown": {
+			"diffuse": "3d2c28",
+			"firework": "3d2c28",
+			"text": "3d2c28"
+		},
+		"green": {
+			"diffuse": "244a1f",
+			"firework": "244a1f",
+			"text": "244a1f"
+		},
+		"red": {
+			"diffuse": "591b19",
+			"firework": "591b19",
+			"text": "591b19"
+		},
+		"black": {
+			"diffuse": "211f1e",
+			"firework": "211f1e",
+			"text": "211f1e"
+		},
+	"sheep": {
+		"white": "eff0ed",
+		"orange": "985f27",
+		"magenta": "7a3584",
+		"light_blue": "4f99b7",
+		"yellow": "ab8c1d",
+		"lime": "72a136",
+		"pink": "c87cc0",
+		"gray": "464442",
+		"light_gray": "9c9997",
+		"cyan": "387782",
+		"purple": "52336b",
+		"blue": "2b4482",
+		"brown": "3d2c28",
+		"green": "244a1f",
+		"red": "460e0e",
+		"black": "211f1e"
+		}
+	}
+}	

@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/stone"},
+			{"model": "block/stone1"},
+			{"model": "block/stone2"},
+			{"model": "block/stone3"}
+		]
+	}
+}

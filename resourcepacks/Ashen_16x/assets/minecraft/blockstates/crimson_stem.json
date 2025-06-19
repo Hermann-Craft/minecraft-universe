@@ -1,0 +1,16 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/crimson_stem"},
+			{"model": "block/crimson_stem1"}
+		],
+		"axis=z": [
+			{"model": "block/crimson_stem", "x": 90},
+			{"model": "block/crimson_stem1", "x": 90}
+		],
+		"axis=x": [
+			{"model": "block/crimson_stem", "x": 90, "y": 90},
+			{"model": "block/crimson_stem1", "x": 90, "y": 90}
+		]
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/stairs",
+	"textures": {
+		"bottom": "minecraft:block/cobblestone2",
+		"top": "minecraft:block/cobblestone2",
+		"side": "minecraft:block/cobblestone2"
+	}
+}

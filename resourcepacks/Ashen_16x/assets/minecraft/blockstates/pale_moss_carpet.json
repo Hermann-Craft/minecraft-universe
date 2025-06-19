@@ -1,0 +1,184 @@
+{
+  "multipart": [
+    {
+      "apply": [
+			{"model": "block/pale_moss_carpet"},
+			{"model": "block/pale_moss_carpet", "y": 90},
+			{"model": "block/pale_moss_carpet", "y": 180},
+			{"model": "block/pale_moss_carpet", "y": 270},
+			{"model": "block/pale_moss_carpet1"},
+			{"model": "block/pale_moss_carpet1", "y": 90},
+			{"model": "block/pale_moss_carpet1", "y": 180},
+			{"model": "block/pale_moss_carpet1", "y": 270},
+			{"model": "block/pale_moss_carpet2"},
+			{"model": "block/pale_moss_carpet2", "y": 90},
+			{"model": "block/pale_moss_carpet2", "y": 180},
+			{"model": "block/pale_moss_carpet2", "y": 270},
+			{"model": "block/pale_moss_carpet3"},
+			{"model": "block/pale_moss_carpet3", "y": 90},
+			{"model": "block/pale_moss_carpet3", "y": 180},
+			{"model": "block/pale_moss_carpet3", "y": 270}
+      ],
+      "when": {
+        "bottom": "true"
+      }
+    },
+    {
+      "apply": [
+			{"model": "block/pale_moss_carpet"},
+			{"model": "block/pale_moss_carpet", "y": 90},
+			{"model": "block/pale_moss_carpet", "y": 180},
+			{"model": "block/pale_moss_carpet", "y": 270},
+			{"model": "block/pale_moss_carpet1"},
+			{"model": "block/pale_moss_carpet1", "y": 90},
+			{"model": "block/pale_moss_carpet1", "y": 180},
+			{"model": "block/pale_moss_carpet1", "y": 270},
+			{"model": "block/pale_moss_carpet2"},
+			{"model": "block/pale_moss_carpet2", "y": 90},
+			{"model": "block/pale_moss_carpet2", "y": 180},
+			{"model": "block/pale_moss_carpet2", "y": 270},
+			{"model": "block/pale_moss_carpet3"},
+			{"model": "block/pale_moss_carpet3", "y": 90},
+			{"model": "block/pale_moss_carpet3", "y": 180},
+			{"model": "block/pale_moss_carpet3", "y": 270}
+      ],
+      "when": {
+        "bottom": "false",
+        "east": "none",
+        "north": "none",
+        "south": "none",
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall"
+      },
+      "when": {
+        "north": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_small"
+      },
+      "when": {
+        "north": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall"
+      },
+      "when": {
+        "bottom": "false",
+        "east": "none",
+        "north": "none",
+        "south": "none",
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_small",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "bottom": "false",
+        "east": "none",
+        "north": "none",
+        "south": "none",
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_small",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "bottom": "false",
+        "east": "none",
+        "north": "none",
+        "south": "none",
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_small",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/pale_moss_carpet_side_tall",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "bottom": "false",
+        "east": "none",
+        "north": "none",
+        "south": "none",
+        "west": "none"
+      }
+    }
+  ]
+}

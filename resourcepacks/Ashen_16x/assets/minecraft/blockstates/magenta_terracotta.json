@@ -1,0 +1,11 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/magenta_terracotta"},
+			{"model": "block/magenta_terracotta1"},
+			{"model": "block/magenta_terracotta2"},
+			{"model": "block/magenta_terracotta3"},
+			{"model": "block/magenta_terracotta4"}
+		]
+	}
+}

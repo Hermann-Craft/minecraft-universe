@@ -1,0 +1,12 @@
+{
+	"variants": {
+		"half=lower": [
+			{"model": "block/lilac_bottom"},
+			{"model": "block/lilac_bottom1"}
+		],
+		"half=upper": [
+			{"model": "block/lilac_top"},
+			{"model": "block/lilac_top1"}
+		]
+	}
+}

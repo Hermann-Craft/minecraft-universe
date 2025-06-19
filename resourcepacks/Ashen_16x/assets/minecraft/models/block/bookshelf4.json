@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_column",
+	"textures": {
+		"particle": "block/spruce_planks",
+		"down": "block/spruce_planks",
+		"up": "block/spruce_planks",
+		"north": "block/bookshelf4",
+		"east": "block/bookshelf4",
+		"south": "block/bookshelf4",
+		"west": "block/bookshelf4"
+	}
+}

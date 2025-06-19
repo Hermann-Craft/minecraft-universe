@@ -1,0 +1,14 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/pale_moss_block"},
+			{"model": "block/pale_moss_block", "y": 90},
+			{"model": "block/pale_moss_block", "y": 180},
+			{"model": "block/pale_moss_block", "y": 270},
+			{"model": "block/pale_moss_block1"},
+			{"model": "block/pale_moss_block1", "y": 90},
+			{"model": "block/pale_moss_block1", "y": 180},
+			{"model": "block/pale_moss_block1", "y": 270}
+		]
+	}
+}

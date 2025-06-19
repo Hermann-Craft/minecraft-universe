@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/hanging_roots"},
+			{"model": "block/hanging_roots1"}
+		]
+	}
+}

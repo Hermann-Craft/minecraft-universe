@@ -1,0 +1,22 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/soul_soil"},
+			{"model": "block/soul_soil", "y": 90, "z": 90, "x": 90},
+			{"model": "block/soul_soil", "y": 180, "z": 180, "x": 180},
+			{"model": "block/soul_soil", "y": 270, "z": 270, "x": 270},
+			{"model": "block/soul_soil1"},
+			{"model": "block/soul_soil1", "y": 90, "z": 90, "x": 90},
+			{"model": "block/soul_soil1", "y": 180, "z": 180, "x": 180},
+			{"model": "block/soul_soil1", "y": 270, "z": 270, "x": 270},
+			{"model": "block/soul_soil2"},
+			{"model": "block/soul_soil2", "y": 90, "z": 90, "x": 90},
+			{"model": "block/soul_soil2", "y": 180, "z": 180, "x": 180},
+			{"model": "block/soul_soil2", "y": 270, "z": 270, "x": 270},
+			{"model": "block/soul_soil3"},
+			{"model": "block/soul_soil3", "y": 90, "z": 90, "x": 90},
+			{"model": "block/soul_soil3", "y": 180, "z": 180, "x": 180},
+			{"model": "block/soul_soil3", "y": 270, "z": 270, "x": 270}
+		]
+	}
+}

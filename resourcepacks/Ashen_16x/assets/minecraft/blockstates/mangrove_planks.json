@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/mangrove_planks"},
+			{"model": "block/mangrove_planks1"},
+			{"model": "block/mangrove_planks2"}
+		]
+	}
+}

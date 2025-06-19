@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/stairs",
+	"textures": {
+		"bottom": "minecraft:block/mossy_cobblestone2",
+		"top": "minecraft:block/mossy_cobblestone2",
+		"side": "minecraft:block/mossy_cobblestone2"
+	}
+}

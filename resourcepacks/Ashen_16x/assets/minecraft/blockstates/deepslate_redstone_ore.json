@@ -1,0 +1,12 @@
+{
+	"variants": {
+		"lit=false": [
+			{"model": "block/deepslate_redstone_ore"},
+			{"model": "block/deepslate_redstone_ore1"}
+		],
+		"lit=true": [
+			{"model": "block/deepslate_redstone_ore2"},
+			{"model": "block/deepslate_redstone_ore3"}
+		]
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_directional1",
+	"textures": {
+		"particle": "block/warped_stem",
+		"down": "block/warped_stem_top",
+		"up": "block/warped_stem_top",
+		"north": "block/warped_stem1",
+		"east": "block/warped_stem3",
+		"south": "block/warped_stem4",
+		"west": "block/warped_stem"
+	}
+}

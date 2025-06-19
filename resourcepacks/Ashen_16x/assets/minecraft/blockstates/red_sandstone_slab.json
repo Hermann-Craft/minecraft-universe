@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"type=double": [
+			{"model": "block/red_sandstone_double"}
+		]
+	}
+}

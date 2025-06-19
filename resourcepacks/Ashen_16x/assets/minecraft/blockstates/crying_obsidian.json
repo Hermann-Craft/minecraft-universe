@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/crying_obsidian", "weight": 2},
+			{"model": "block/crying_obsidian1", "weight": 1},
+			{"model": "block/crying_obsidian2", "weight": 1}
+		]
+	}
+}

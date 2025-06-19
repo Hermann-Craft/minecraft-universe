@@ -1,0 +1,34 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/basalt"},
+			{"model": "block/basalt1"},
+			{"model": "block/basalt2"},
+			{"model": "block/basalt3"},
+			{"model": "block/basalt4"},
+			{"model": "block/basalt5"},
+			{"model": "block/basalt6"},
+			{"model": "block/basalt7"}
+		],
+		"axis=z": [
+			{"model": "block/basalt", "x": 90},
+			{"model": "block/basalt1", "x": 90},
+			{"model": "block/basalt2", "x": 90},
+			{"model": "block/basalt3", "x": 90},
+			{"model": "block/basalt4", "x": 90},
+			{"model": "block/basalt5", "x": 90},
+			{"model": "block/basalt6", "x": 90},
+			{"model": "block/basalt7", "x": 90}
+		],
+		"axis=x": [
+			{"model": "block/basalt", "x": 90, "y": 90},
+			{"model": "block/basalt1", "x": 90, "y": 90},
+			{"model": "block/basalt2", "x": 90, "y": 90},
+			{"model": "block/basalt3", "x": 90, "y": 90},
+			{"model": "block/basalt4", "x": 90, "y": 90},
+			{"model": "block/basalt5", "x": 90, "y": 90},
+			{"model": "block/basalt6", "x": 90, "y": 90},
+			{"model": "block/basalt7", "x": 90, "y": 90}
+		]
+	}
+}

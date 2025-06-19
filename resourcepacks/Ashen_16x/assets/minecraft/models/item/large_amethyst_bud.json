@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/template_candle",
+  "textures": {
+    "layer0": "minecraft:block/large_amethyst_bud"
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/warped_double"}
+		],
+		"type=bottom": [
+			{"model": "block/warped_slab"},
+			{"model": "block/warped_slab1"},
+			{"model": "block/warped_slab2"}
+		],
+		"type=top": [
+			{"model": "block/warped_slab_top"},
+			{"model": "block/warped_slab_top1"},
+			{"model": "block/warped_slab_top2"}
+		]
+	}
+}

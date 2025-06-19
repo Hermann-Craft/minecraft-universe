@@ -1,0 +1,7 @@
+{ 
+	"targets": [
+		"minecraft:mushroom_fields"
+	],
+	"sky_color": 11775436,
+	"fog_color": 12829670
+}

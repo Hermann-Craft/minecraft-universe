@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "minecraft:block/stem_0"
+    },
+    "age=1": {
+      "model": "minecraft:block/stem_1"
+    },
+    "age=2": {
+      "model": "minecraft:block/stem_2"
+    },
+    "age=3": {
+      "model": "minecraft:block/stem_2"
+    },
+    "age=4": {
+      "model": "minecraft:block/stem_3"
+    },
+    "age=5": {
+      "model": "minecraft:block/stem_3"
+    },
+    "age=6": {
+      "model": "minecraft:block/stem_4"
+    },
+    "age=7": {
+      "model": "minecraft:block/stem_4"
+    }
+  }
+}

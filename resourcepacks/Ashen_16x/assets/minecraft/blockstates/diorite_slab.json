@@ -1,0 +1,27 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/diorite_double"}
+		],
+		"type=bottom": [
+			{"model": "block/diorite_slab"},
+			{"model": "block/diorite_slab", "y": 90},
+			{"model": "block/diorite_slab", "y": 180},
+			{"model": "block/diorite_slab", "y": 270},
+			{"model": "block/diorite_slab1"},
+			{"model": "block/diorite_slab1", "y": 90},
+			{"model": "block/diorite_slab1", "y": 180},
+			{"model": "block/diorite_slab1", "y": 270}
+		],
+		"type=top": [
+			{"model": "block/diorite_slab_top"},
+			{"model": "block/diorite_slab_top", "y": 90},
+			{"model": "block/diorite_slab_top", "y": 180},
+			{"model": "block/diorite_slab_top", "y": 270},
+			{"model": "block/diorite_slab_top1"},
+			{"model": "block/diorite_slab_top1", "y": 90},
+			{"model": "block/diorite_slab_top1", "y": 180},
+			{"model": "block/diorite_slab_top1", "y": 270}
+		]
+	}
+}

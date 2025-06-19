@@ -1,0 +1,12 @@
+{
+	"variants": {
+		"facing=east": 
+			{"model": "minecraft:block/stem_4connected", "y": 180},
+		"facing=north": 
+			{"model": "minecraft:block/stem_4connected", "y": 90},
+		"facing=south": 
+			{"model": "minecraft:block/stem_4connected", "y": 270},
+		"facing=west": 
+			{"model": "minecraft:block/stem_4connected"}
+	}
+}

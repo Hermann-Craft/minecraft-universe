@@ -1,0 +1,17 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/spruce_double"}
+		],
+		"type=bottom": [
+			{"model": "block/spruce_slab"},
+			{"model": "block/spruce_slab1"},
+			{"model": "block/spruce_slab2"}
+		],
+		"type=top": [
+			{"model": "block/spruce_slab_top"},
+			{"model": "block/spruce_slab_top1"},
+			{"model": "block/spruce_slab_top2"}
+		]
+	}
+}

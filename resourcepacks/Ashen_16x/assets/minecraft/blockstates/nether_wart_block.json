@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/nether_wart_block"},
+			{"model": "block/nether_wart_block", "y": 180, "x": 180, "z": 180}
+		]
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/stripped_mangrove_log", "weight": 10},
+			{"model": "block/stripped_mangrove_log1", "weight": 10},
+			{"model": "block/stripped_mangrove_log2", "weight": 4},
+			{"model": "block/stripped_mangrove_log3", "weight": 3}
+		],
+		"axis=z": [
+			{"model": "block/stripped_mangrove_log", "x": 90, "weight": 10},
+			{"model": "block/stripped_mangrove_log1", "x": 90, "weight": 10},
+			{"model": "block/stripped_mangrove_log2", "x": 90, "weight": 4},
+			{"model": "block/stripped_mangrove_log3", "x": 90, "weight": 3}
+		],
+		"axis=x": [
+			{"model": "block/stripped_mangrove_log", "x": 90, "y": 90, "weight": 10},
+			{"model": "block/stripped_mangrove_log1", "x": 90, "y": 90, "weight": 10},
+			{"model": "block/stripped_mangrove_log2", "x": 90, "y": 90, "weight": 4},
+			{"model": "block/stripped_mangrove_log3", "x": 90, "y": 90, "weight": 3}
+		]
+	}
+}

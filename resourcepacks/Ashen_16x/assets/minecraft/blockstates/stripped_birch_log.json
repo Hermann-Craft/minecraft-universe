@@ -1,0 +1,16 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/stripped_birch_log"},
+			{"model": "block/stripped_birch_log1"}
+		],
+		"axis=z": [
+			{"model": "block/stripped_birch_log", "x": 90},
+			{"model": "block/stripped_birch_log1", "x": 90}
+		],
+		"axis=x": [
+			{"model": "block/stripped_birch_log", "x": 90, "y": 90},
+			{"model": "block/stripped_birch_log1", "x": 90, "y": 90}
+		]
+	}
+}

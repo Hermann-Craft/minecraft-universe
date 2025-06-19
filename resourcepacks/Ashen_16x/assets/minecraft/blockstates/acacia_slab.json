@@ -1,0 +1,17 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/acacia_double"}
+		],
+		"type=bottom": [
+			{"model": "block/acacia_slab"},
+			{"model": "block/acacia_slab1"},
+			{"model": "block/acacia_slab2"}
+		],
+		"type=top": [
+			{"model": "block/acacia_slab_top"},
+			{"model": "block/acacia_slab_top1"},
+			{"model": "block/acacia_slab_top2"}
+		]
+	}
+}

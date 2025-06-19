@@ -1,0 +1,17 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/oak_double"}
+		],
+		"type=bottom": [
+			{"model": "block/oak_slab"},
+			{"model": "block/oak_slab1"},
+			{"model": "block/oak_slab2"}
+		],
+		"type=top": [
+			{"model": "block/oak_slab_top"},
+			{"model": "block/oak_slab_top1"},
+			{"model": "block/oak_slab_top2"}
+		]
+	}
+}

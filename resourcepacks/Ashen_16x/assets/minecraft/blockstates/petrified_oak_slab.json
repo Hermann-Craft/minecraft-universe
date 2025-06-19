@@ -1,0 +1,25 @@
+{
+	"variants": {
+		"type=double": [
+			{"model": "block/petrified_oak_double"}
+		],
+		"type=bottom": [
+			{"model": "block/petrified_oak_slab"},
+			{"model": "block/petrified_oak_slab1"},
+			{"model": "block/petrified_oak_slab2"},
+			{"model": "block/petrified_oak_slab3"},
+			{"model": "block/petrified_oak_slab4"},
+			{"model": "block/petrified_oak_slab5"},
+			{"model": "block/petrified_oak_slab6"}
+		],
+		"type=top": [
+			{"model": "block/petrified_oak_slab_top"},
+			{"model": "block/petrified_oak_slab_top1"},
+			{"model": "block/petrified_oak_slab_top2"},
+			{"model": "block/petrified_oak_slab_top3"},
+			{"model": "block/petrified_oak_slab_top4"},
+			{"model": "block/petrified_oak_slab_top5"},
+			{"model": "block/petrified_oak_slab_top6"}
+		]
+	}
+}

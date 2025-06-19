@@ -1,0 +1,52 @@
+Catalog of artworks studied to create Ashen's paintings alphabetically by texture title:
+
+	- alban		  (1x1)	-- "Fruit," Julian Alden Weir, ca. 1888
+	- aztec		  (1x1)	-- "Still Life: Fish," William Merritt Chase, 1908
+	- aztec2	  (1x1)	-- "Molnet," Prince Eugen Napoleon Nicolaus, 1927
+	- backyard	  (3x4)	-- "Gothic windows in the ruins of the monastery at Oybin," Carl Gustav Carus, 1828
+	- baroque	  (2x2)	-- "Still Life with Flowers and Prickly Pears," Auguste Renoir, 1885 
+	- bomb		  (1x1)	-- "Sea and Cliffs," Auguste Renoir, ca. 1885
+	- bouquet	  (3x3)	-- "Fragment of a tapestry or wall hanging," Upper Rhenish, ca. 1420-30
+	- burning_skull	  (4x4)	--
+	- bust		  (2x2)	-- 
+	- cavebird	  (3x3)	-- "Porte de la raine at aigues mortes," Jean Frederic Bazille, 1867
+	- changing	  (4x2)	-- "Rye Fields," Ivan Ivanovich Shishkin, 1878
+	- cotan		  (3x3)	--
+	- courbet	  (2x1)	--
+	- creebet	  (2x1)	-- "View of Lormes," Camille Corot, 1840
+	- donkey_kong	  (4x3)	-- "Fra Øylo i Valdres," Johan Christian Dahl, 1846
+	- earth		  (2x2)	-- Lego Bionicle, Onua Nuva symbol 
+	- endboss	  (3x3)	-- 
+	- fern		  (3x3)	-- "Indian Summer," Willard Metcalf, 1922
+	- fighters	  (4x2)	-- "Panel with striding lion," ca. 604-562 B.C., looted from the Ishtar Gate, modern Iraq
+	- finding	  (2x2)	-- 
+	- fire		  (2x2)	-- Lego Bionicle, Tahu Nuva symbol 
+	- graham	  (1x2)	-- "Chrysanthemums in the Garden at Petit-Gennevilliers," Gustave Caillebotte, 1893
+	- humble	  (2x2)	-- "Boğaz," Halil Paşa, 1912 
+	- kebab		  (1x1)	-- "Peonies," Denman Ross, 1919
+	- lowmist	  (4x2)	-- "Die Toteninsel III," Arnold Böcklin, 1883
+	- match		  (2x2)	-- Original
+	- meditative	  (1x1)	-- "Landscape," Circle of Carl Rottmann, 1835
+	- orb		  (4x4)	--
+	- owlemons	  (3x3)	-- "Northeaster," Winslow Homer, 1895
+	- passage	  (4x2)	--
+	- pigscene	  (4x4)	-- "Sunrise on the Matterhorn," Albert Bierstadt, 1875
+	- plant		  (1x1)	--
+	- pointer	  (4x4)	-- "Winterlandschaft mitt Kirche," Caspar David Friedrich, 1811
+	- pond		  (2x1)	-- "Blomstrende Pelargonie. Capri," Peter Ilsted, 1891 
+	- pool		  (2x1)	-- "Lake Albano and Castel Gandolfo," Camille Corot, 1826-1827
+	- prairie_ride	  (1x2)	-- "Sagoprinsessan," John Bauer, 1904
+	- sea		  (2x1)	-- Original
+	- skeleton	  (4x3)	-- 
+	- skull_and_roses (2x2)	-- 
+	- stage		  (2x2)	-- "Skulptören Sven Andersson," Anders Zorn, 1881
+	- sunflowers	  (3x3)	-- "The Rock of Hautepierre," Gustave Courbet, 1891
+	- sunset	  (2x1)	-- Original, photograph of view over Dorchester Bay, Boston, 2023)
+	- tides		  (3x3)	-- "Beaulieu the Bay of Fourmis," Eugene Boudin, 1892
+	- unpacked	  (4x4)	-- pack.png
+	- void		  (2x2)	-- An antique cross stitch pattern
+	- wanderer	  (1x2)	--
+	- wasteland	  (1x1)	--
+	- water		  (2x2)	-- Lego Bionicle, Gali Nuva symbol
+	- wind		  (2x2)	-- Lego Bionicle, Lewa Nuva symbol
+	- wither	  (2x2)	--

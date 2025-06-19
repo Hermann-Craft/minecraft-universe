@@ -1,0 +1,18 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/mycelium"},
+			{"model": "block/mycelium1"},
+			{"model": "block/mycelium2"},
+			{"model": "block/mycelium3"},
+			{"model": "block/mycelium", "y": 90},
+			{"model": "block/mycelium", "y": 180},
+			{"model": "block/mycelium1", "y": 90},
+			{"model": "block/mycelium1", "y": 180},
+			{"model": "block/mycelium2", "y": 90},
+			{"model": "block/mycelium2", "y": 180},
+			{"model": "block/mycelium3", "y": 90},
+			{"model": "block/mycelium3", "y": 180}
+		]
+	}
+}

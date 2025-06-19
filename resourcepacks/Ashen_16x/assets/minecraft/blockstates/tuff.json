@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/tuff"},
+			{"model": "block/tuff1"},
+			{"model": "block/tuff2"},
+			{"model": "block/tuff3"}
+		]
+	}
+}

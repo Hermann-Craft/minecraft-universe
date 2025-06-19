@@ -1,0 +1,18 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "block/stem_main0",
+		"particle": "block/stem_main0"
+	},
+	"elements": [
+		{
+			"name": "stem",
+			"from": [0, -2, 8],
+			"to": [16, 14, 8],
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"}
+			}
+		}
+	]
+}

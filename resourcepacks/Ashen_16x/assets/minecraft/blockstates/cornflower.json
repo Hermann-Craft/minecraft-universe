@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/cornflower"},
+			{"model": "block/cornflower1"},
+			{"model": "block/cornflower2"}
+		]
+	}
+}

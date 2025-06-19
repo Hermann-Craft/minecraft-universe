@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_directional1",
+	"textures": {
+		"particle": "block/spruce_log",
+		"down": "block/spruce_log_top",
+		"up": "block/spruce_log_top",
+		"north": "block/spruce_log3",
+		"east": "block/spruce_log1",
+		"south": "block/spruce_log2",
+		"west": "block/spruce_log4"
+	}
+}

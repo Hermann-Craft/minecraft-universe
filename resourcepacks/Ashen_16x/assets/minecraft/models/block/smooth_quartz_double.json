@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube_column",
+	"textures": {
+		"particle": "block/smooth_quartz",
+		"down": "block/smooth_quartz",
+		"up": "block/smooth_quartz",
+		"north": "block/smooth_quartz_slab",
+		"east": "block/smooth_quartz_slab",
+		"south": "block/smooth_quartz_slab",
+		"west": "block/smooth_quartz_slab"
+	}
+}

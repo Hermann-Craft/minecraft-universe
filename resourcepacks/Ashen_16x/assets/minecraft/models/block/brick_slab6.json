@@ -1,0 +1,8 @@
+{
+    "parent": "block/slab",
+    "textures": {
+        "bottom": "block/bricks6",
+        "top": "block/bricks6",
+        "side": "block/bricks6"
+    }
+}

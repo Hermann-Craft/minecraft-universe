@@ -1,0 +1,24 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/fern"},
+			{"model": "block/fern1"},
+			{"model": "block/fern2"},
+			{"model": "block/fern3"},
+			{"model": "block/fern4"},
+			{"model": "block/fern5"},
+			{"model": "block/fern6"},
+			{"model": "block/fern7"},
+			{"model": "block/fern8"},
+			{"model": "block/fern9"},
+			{"model": "block/fern10"},
+			{"model": "block/fern11"},
+			{"model": "block/fern12"},
+			{"model": "block/fern13"},
+			{"model": "block/fern14"},
+			{"model": "block/fern15"},
+			{"model": "block/fern16"},
+			{"model": "block/fern17"}
+		]
+	}
+}

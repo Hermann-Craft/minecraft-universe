@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/potted_jungle_sapling"},
+			{"model": "block/potted_jungle_sapling", "y": 90},
+			{"model": "block/potted_jungle_sapling", "y": 180},
+			{"model": "block/potted_jungle_sapling", "y": 270}
+		]
+	}
+}

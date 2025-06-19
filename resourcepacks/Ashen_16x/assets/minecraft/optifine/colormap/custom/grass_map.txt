@@ -1,0 +1,150 @@
+Cherry Grove=63
+Mangrove Swamp=61
+Warm Ocean=33
+Ice Spikes=43
+Snowy Plains=12
+Frozen River=11
+Snowy Taiga=22
+Frozen Ocean=10
+Deep Frozen Ocean=38
+Deep Cold Ocean=37
+Cold Ocean=35
+Ocean=0
+Deep Ocean=17
+Lukewarm Ocean=34
+Deep Lukewarm Ocean=36
+Stony Shore=18
+Savanna=25
+Savanna Plateau=26
+Windswept Savanna=46
+Plains=1
+Sparse Jungle=16
+Forest=4
+Flower Forest=42
+Sunflower Plains=40
+Meadow=55
+Grove=56
+Jagged Peaks=59
+Frozen Peaks=58
+Snowy Slopes=57
+Snowy Beach=19
+Beach=14
+Taiga=5
+Old Growth Pine Taiga=23
+Old Growth Spruce Taiga=45
+Old Growth Birch Forest=44
+Birch Forest=20
+Dark Forest=21
+River=7
+Windswept Hills=3
+Windswept Gravelly Hills=41
+Windswept Forest=24
+Swamp=6
+Mushroom Fields=13
+Lush Caves=54
+Dripstone Caves=53
+Deep Dark=62
+Badlands=27
+Wooded Badlands=28
+Eroded Badlands=47
+Desert=2
+Stony Peaks=60
+Basalt Deltas=52
+Warped Forest=51
+Crimson Forest=50
+Soul Sand Valley=49
+Nether Wastes=8
+Bamboo Jungle=48
+Jungle=15
+The End=9
+End Highlands=31
+End Midlands=30
+End Barrens=32
+Small End Islands=29
+The Void=39
+
+
+
+Ocean=0 *
+Plains=1 *
+Desert=2 *
+Windswept Hills=3 *
+Forest=4 *
+Taiga=5 *
+Swamp=6 -----
+River=7 *
+Nether Wastes=8 *
+The End=9 *
+Frozen Ocean=10 *
+Frozen River=11 *
+Snowy Plains=12 *
+Mushroom Fields=13 *
+Beach=14 *
+Jungle=15 *
+Sparse Jungle=16 *
+Deep Ocean=17 *
+Stony Shore=18 *
+Snowy Beach=19 *
+Birch Forest=20 *
+Dark Forest=21 -----
+Snowy Taiga=22 *
+Old Growth Pine Taiga=23 *
+Windswept Forest=24 *
+Savanna=25 *
+Savanna Plateau=26 *
+Badlands=27 -----
+Wooded Badlands=28 -----
+Small End Islands=29 *
+End Midlands=30 *
+End Highlands=31 *
+End Barrens=32 *
+Warm Ocean=33 *
+Lukewarm Ocean=34 *
+Cold Ocean=35 *
+Deep Lukewarm Ocean=36 *
+Deep Cold Ocean=37 *
+Deep Frozen Ocean=38 *
+The Void=39 *
+Sunflower Plains=40 *
+Windswept Gravelly Hills=41 *
+Flower Forest=42 *
+Ice Spikes=43 *
+Old Growth Birch Forest=44 *
+Old Growth Spruce Taiga=45 *
+Windswept Savanna=46 *
+Eroded Badlands=47 -----
+Bamboo Jungle=48 *
+Soul Sand Valley=49 *
+Crimson Forest=50 *
+Warped Forest=51 *
+Basalt Deltas=52 *
+Dripstone Caves=53 *
+Lush Caves=54 *
+Meadow=55 *
+Grove=56 *
+Snowy Slopes=57 *
+Frozen Peaks=58 * 
+Jagged Peaks=59 *
+Stony Peaks=60 *
+Mangrove Swamp=61 -----
+Deep Dark=62 *
+Cherry Grove=63 *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

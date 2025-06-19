@@ -1,0 +1,42 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/crafting_table"},
+			{"model": "block/crafting_table", "y": 90},
+			{"model": "block/crafting_table", "y": 180},
+			{"model": "block/crafting_table", "y": 270},
+			{"model": "block/crafting_table1"},
+			{"model": "block/crafting_table1", "y": 90},
+			{"model": "block/crafting_table1", "y": 180},
+			{"model": "block/crafting_table1", "y": 270},
+			{"model": "block/crafting_table2"},
+			{"model": "block/crafting_table2", "y": 90},
+			{"model": "block/crafting_table2", "y": 180},
+			{"model": "block/crafting_table2", "y": 270},
+			{"model": "block/crafting_table3"},
+			{"model": "block/crafting_table3", "y": 90},
+			{"model": "block/crafting_table3", "y": 180},
+			{"model": "block/crafting_table3", "y": 270},
+			{"model": "block/crafting_table4"},
+			{"model": "block/crafting_table4", "y": 90},
+			{"model": "block/crafting_table4", "y": 180},
+			{"model": "block/crafting_table4", "y": 270},
+			{"model": "block/crafting_table5"},
+			{"model": "block/crafting_table5", "y": 90},
+			{"model": "block/crafting_table5", "y": 180},
+			{"model": "block/crafting_table5", "y": 270},
+			{"model": "block/crafting_table6"},
+			{"model": "block/crafting_table6", "y": 90},
+			{"model": "block/crafting_table6", "y": 180},
+			{"model": "block/crafting_table6", "y": 270},
+			{"model": "block/crafting_table7"},
+			{"model": "block/crafting_table7", "y": 90},
+			{"model": "block/crafting_table7", "y": 180},
+			{"model": "block/crafting_table7", "y": 270},
+			{"model": "block/crafting_table8"},
+			{"model": "block/crafting_table8", "y": 90},
+			{"model": "block/crafting_table8", "y": 180},
+			{"model": "block/crafting_table8", "y": 270}
+		]
+	}
+}

@@ -1,0 +1,42 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"4": "block/bamboo_door_top",
+		"5": "block/bamboo_door_sides",
+		"6": "block/bamboo_door_top_frame",
+		"particle": "block/bamboo_door_top_frame"
+	},
+	"elements": [
+		{
+			"from": [1.5, 2, 4],
+			"to": [1.5, 12, 12],
+			"faces": {
+				"east": {"uv": [12, 4, 4, 14], "texture": "#4"},
+				"west": {"uv": [4, 4, 12, 14], "texture": "#4"}
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [3, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 3, 16], "texture": "#5"},
+				"east": {"uv": [16, 0, 0, 16], "texture": "#6"},
+				"south": {"uv": [6, 0, 9, 16], "texture": "#5"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#6"},
+				"up": {"uv": [12, 0, 15, 16], "texture": "#5"},
+				"down": {"uv": [12, 0, 15, 16], "texture": "#5"}
+			}
+		},
+		{
+			"from": [3, 12, 12],
+			"to": [0, 2, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 12, 12]},
+			"faces": {
+				"north": {"uv": [12, 3, 15, 13], "texture": "#5"},
+				"south": {"uv": [12, 3, 15, 13], "texture": "#5"},
+				"up": {"uv": [12, 4, 15, 12], "texture": "#5"},
+				"down": {"uv": [12, 4, 15, 12], "texture": "#5"}
+			}
+		}
+	]
+}

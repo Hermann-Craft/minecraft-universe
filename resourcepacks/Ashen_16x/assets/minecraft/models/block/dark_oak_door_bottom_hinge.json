@@ -1,0 +1,23 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "block/dark_oak_door_bottom1",
+		"1": "block/door_side2",
+		"2": "block/door_side3",
+		"particle": "block/dark_oak_door_bottom"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [3, 16, 16],
+			"faces": {
+				"north": {"uv": [3, 0, 6, 16], "texture": "#2"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"south": {"uv": [9, 0, 12, 16], "texture": "#1"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"up": {"uv": [12, 0, 15, 16], "rotation": 180, "texture": "#1"},
+				"down": {"uv": [12, 0, 15, 16], "rotation": 180, "texture": "#1"}
+			}
+		}
+	]
+}

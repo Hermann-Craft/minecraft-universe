@@ -1,0 +1,8 @@
+{
+	"parent": "block/cube_column_mirrored",
+	"textures": {
+		"end": "block/deepslate2",
+		"side": "block/deepslate2"			
+		
+	}
+}

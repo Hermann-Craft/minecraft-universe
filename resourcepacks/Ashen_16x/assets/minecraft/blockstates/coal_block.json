@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/coal_block"},
+			{"model": "block/coal_block1"}
+		]
+	}
+}

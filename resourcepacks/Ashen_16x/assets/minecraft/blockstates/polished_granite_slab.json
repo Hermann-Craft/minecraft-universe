@@ -1,0 +1,13 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/polished_granite_double"}
+		],
+		"type=bottom": [
+			{"model": "block/polished_granite_slab"}
+		],
+		"type=top": [
+			{"model": "block/polished_granite_slab_top"}
+		]
+	}
+}

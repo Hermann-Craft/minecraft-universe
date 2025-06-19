@@ -1,0 +1,22 @@
+{
+	"variants": {
+		"axis=y": [
+			{"model": "block/pale_oak_log", "weight":3},
+			{"model": "block/pale_oak_log1", "weight":3},
+			{"model": "block/pale_oak_log2", "weight":1},
+			{"model": "block/pale_oak_log3", "weight":1}
+		],
+		"axis=z": [
+			{"model": "block/pale_oak_log", "x": 90, "weight":3},
+			{"model": "block/pale_oak_log1", "x": 90, "weight":3},
+			{"model": "block/pale_oak_log2", "x": 90, "weight":1},
+			{"model": "block/pale_oak_log3", "x": 90, "weight":1}
+		],
+		"axis=x": [
+			{"model": "block/pale_oak_log", "x": 90, "y": 90, "weight":3},
+			{"model": "block/pale_oak_log1", "x": 90, "y": 90, "weight":3},
+			{"model": "block/pale_oak_log2", "x": 90, "y": 90, "weight":1},
+			{"model": "block/pale_oak_log3", "x": 90, "y": 90, "weight":1}
+		]
+	}
+}

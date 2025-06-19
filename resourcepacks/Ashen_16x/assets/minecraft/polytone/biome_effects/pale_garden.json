@@ -1,0 +1,9 @@
+{
+	"targets": [
+		"minecraft:pale_garden"
+	],
+		"sky_color": 12171705,
+		"fog_color": 8484720,
+		"grass_color": 7832178,
+		"foliage_color": 8883574
+}

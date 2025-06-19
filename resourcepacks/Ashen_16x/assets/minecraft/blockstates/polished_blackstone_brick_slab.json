@@ -1,0 +1,21 @@
+{
+	"variants": {
+        	"type=double": [
+			{"model": "block/polished_blackstone_brick_double"},
+			{"model": "block/polished_blackstone_brick_double1"},
+			{"model": "block/polished_blackstone_brick_double2"}
+		],
+		"type=bottom": [
+			{"model": "block/polished_blackstone_brick_slab"},
+			{"model": "block/polished_blackstone_brick_slab1"},
+			{"model": "block/polished_blackstone_brick_slab2"},
+			{"model": "block/polished_blackstone_brick_slab3"}
+		],
+		"type=top": [
+			{"model": "block/polished_blackstone_brick_slab_top"},
+			{"model": "block/polished_blackstone_brick_slab_top1"},
+			{"model": "block/polished_blackstone_brick_slab_top2"},
+			{"model": "block/polished_blackstone_brick_slab_top3"}
+		]
+	}
+}

@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "type=double": [
+			{"model": "block/tuff_double"},
+			{"model": "block/tuff_double1"}
+		],
+	"type=bottom": [
+			{"model": "block/tuff_slab"},
+			{"model": "block/tuff_slab1"},
+			{"model": "block/tuff_slab2"},
+			{"model": "block/tuff_slab3"}
+		],
+	"type=top": [
+			{"model": "block/tuff_slab_top"},
+			{"model": "block/tuff_slab_top1"},
+			{"model": "block/tuff_slab_top2"},
+			{"model": "block/tuff_slab_top3"}
+		]
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"type=double": [
+			{"model": "block/smooth_sandstone_double"}
+		]
+	}
+}

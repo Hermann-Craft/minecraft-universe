@@ -1,0 +1,14 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/mangrove_roots"},
+			{"model": "block/mangrove_roots1"},
+			{"model": "block/mangrove_roots2"},
+			{"model": "block/mangrove_roots3"},
+			{"model": "block/mangrove_roots4"},
+			{"model": "block/mangrove_roots5"},
+			{"model": "block/mangrove_roots6"},
+			{"model": "block/mangrove_roots7"}
+		]
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/netherrack"},
+			{"model": "block/netherrack", "y":90, "z":90, "x":90},
+			{"model": "block/netherrack", "y":180, "z":180, "x":180},
+			{"model": "block/netherrack", "y":270, "z":270, "x":270},
+			{"model": "block/netherrack1"},
+			{"model": "block/netherrack1", "y":90, "z":90, "x":90},
+			{"model": "block/netherrack1", "y":180, "z":180, "x":180},
+			{"model": "block/netherrack1", "y":270, "z":270, "x":270},
+			{"model": "block/netherrack2"},
+			{"model": "block/netherrack2", "y":90, "z":90, "x":90},
+			{"model": "block/netherrack2", "y":180, "z":180, "x":180},
+			{"model": "block/netherrack2", "y":270, "z":270, "x":270},
+			{"model": "block/netherrack3"},
+			{"model": "block/netherrack3", "y":90, "z":90, "x":90},
+			{"model": "block/netherrack3", "y":180, "z":180, "x":180},
+			{"model": "block/netherrack3", "y":270, "z":270, "x":270},
+			{"model": "block/netherrack4"},
+			{"model": "block/netherrack4", "y":90, "z":90, "x":90},
+			{"model": "block/netherrack4", "y":180, "z":180, "x":180},
+			{"model": "block/netherrack4", "y":270, "z":270, "x":270}
+		]
+	}
+}

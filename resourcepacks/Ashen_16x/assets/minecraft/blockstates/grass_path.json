@@ -1,0 +1,13 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/grass_path"},
+			{"model": "block/grass_path1"},
+			{"model": "block/grass_path2"},
+			{"model": "block/grass_path3"},
+			{"model": "block/grass_path4"},
+			{"model": "block/grass_path5"},
+			{"model": "block/grass_path5"}
+		]
+	}
+}

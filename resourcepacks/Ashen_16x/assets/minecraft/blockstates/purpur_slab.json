@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"type=double": [
+			{"model": "block/purpur_double"}
+		]
+	}
+}

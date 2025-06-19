@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"": [
+			{"model": "block/clay"},
+			{"model": "block/clay", "y": 180},
+			{"model": "block/clay1"},
+			{"model": "block/clay1", "y": 180}
+		]
+	}
+}
