@@ -37,6 +37,7 @@ type Game struct {
 	// Resource Management
 	blockRegistry *world.BlockRegistry
 	textureAtlas  render.TextureAtlas
+	textRenderer  *render.TextRenderer
 }
 
 // NewGame creates a new instance of the game
@@ -101,6 +102,18 @@ func (game *Game) Init() error {
 		game.window.Destroy()
 		glfw.Terminate()
 		return fmt.Errorf("failed to load basic shader: %w", err)
+	}
+
+	// Update text renderer screen size
+	w, h := game.window.GetSize()
+	render.SetScreenDimensions(w, h)
+
+	// Initialize text renderer for HUD
+	game.textRenderer = &render.TextRenderer{}
+	if err := game.textRenderer.Init(); err != nil {
+		game.window.Destroy()
+		glfw.Terminate()
+		return fmt.Errorf("failed to initialize text renderer: %w", err)
 	}
 
 	// === RESOURCE LOADING ===
@@ -327,6 +340,14 @@ func (game *Game) Render() {
 	if game.planet != nil {
 		currentTime := glfw.GetTime()
 		game.planet.Render(currentTime, game.renderer, game.camera, projection)
+	}
+
+	// Render HUD text showing current world face
+	if game.textRenderer != nil && game.cameraPhysics != nil {
+		pos := game.cameraPhysics.GetPosition()
+		face := game.planet.GetActualFacePositionOfObject(int(pos.X()), int(pos.Y()), int(pos.Z()))
+		text := fmt.Sprintf("World Face: %s", face)
+		game.textRenderer.RenderText(text, 10, 25, 1.0)
 	}
 
 	game.renderer.EndFrame()

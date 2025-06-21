@@ -74,6 +74,10 @@ func (renderer *Renderer) setupOpenGL() error {
 		return fmt.Errorf("failed to initialize OpenGL: %w", err)
 	}
 
+	// Set the viewport to the window's framebuffer size
+	fbWidth, fbHeight := renderer.window.GetFramebufferSize()
+	gl.Viewport(0, 0, int32(fbWidth), int32(fbHeight))
+
 	// Logs détaillés pour la compatibilité
 	glVersion := gl.GoStr(gl.GetString(gl.VERSION))
 	glRenderer := gl.GoStr(gl.GetString(gl.RENDERER))
@@ -143,6 +147,8 @@ func (renderer *Renderer) SetClearColor(color mgl32.Vec4) {
 
 // BeginFrame commence une frame de rendu
 func (renderer *Renderer) BeginFrame() {
+	// Re-enable depth testing in case it was disabled (e.g., by text rendering)
+	gl.Enable(gl.DEPTH_TEST)
 	// Nettoyer les statistiques
 	renderer.stats.DrawCalls = 0
 	renderer.stats.Triangles = 0

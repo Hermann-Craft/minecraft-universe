@@ -283,7 +283,7 @@ func (p *Planet) GetSurfaceHeight(x, z int) (int, error) {
 }
 
 // func GetActuelFacePosition(x, y, z) WorldFace
-func (p *Planet) GetActuelFacePositionOfObject(x, y, z int) WorldFace {
+func (p *Planet) GetActualFacePositionOfObject(x, y, z int) WorldFace {
 	// Compute the object's world-space position at block center
 	pos := mgl32.Vec3{float32(x) + 0.5, float32(y) + 0.5, float32(z) + 0.5}
 	// Compute the center of the planetary cube
