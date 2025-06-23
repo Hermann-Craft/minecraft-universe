@@ -3,7 +3,6 @@ package world
 import (
 	"fmt"
 	"log"
-	"math"
 	"sync"
 	"time"
 
@@ -280,40 +279,6 @@ func (p *Planet) GetSurfaceHeight(x, z int) (int, error) {
 
 	// If no surface found, return a default height
 	return 32, nil
-}
-
-// func GetActuelFacePosition(x, y, z) WorldFace
-func (p *Planet) GetActualFacePositionOfObject(x, y, z int) WorldFace {
-	// Compute the object's world-space position at block center
-	pos := mgl32.Vec3{float32(x) + 0.5, float32(y) + 0.5, float32(z) + 0.5}
-	// Compute the center of the planetary cube
-	halfWidth := float32(p.Size.X()) * float32(p.ChunkSize.Width) / 2.0
-	halfHeight := float32(p.Size.Y()) * float32(p.ChunkSize.Height) / 2.0
-	halfDepth := float32(p.Size.Z()) * float32(p.ChunkSize.Depth) / 2.0
-	center := p.Position.Add(mgl32.Vec3{halfWidth, halfHeight, halfDepth})
-	// Vector from center to object
-	v := pos.Sub(center)
-	// Absolute components
-	absX := float32(math.Abs(float64(v.X())))
-	absY := float32(math.Abs(float64(v.Y())))
-	absZ := float32(math.Abs(float64(v.Z())))
-	// Determine the face by the dominant axis
-	if absY >= absX && absY >= absZ {
-		if v.Y() >= 0 {
-			return WorldFaceTop
-		}
-		return WorldFaceBottom
-	} else if absX >= absY && absX >= absZ {
-		if v.X() >= 0 {
-			return WorldFaceRight
-		}
-		return WorldFaceLeft
-	} else {
-		if v.Z() >= 0 {
-			return WorldFaceFront
-		}
-		return WorldFaceBack
-	}
 }
 
 // GetSafeSpawnPosition calculates a safe spawn position for the player

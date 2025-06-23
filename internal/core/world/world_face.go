@@ -4,7 +4,8 @@ package world
 type WorldFace int
 
 const (
-	WorldFaceTop WorldFace = iota
+	WorldFaceNone WorldFace = iota // Represents no specific face
+	WorldFaceTop
 	WorldFaceBottom
 	WorldFaceLeft
 	WorldFaceRight
@@ -12,23 +13,25 @@ const (
 	WorldFaceBack
 )
 
-// String retourne le nom de la face
-func (wf WorldFace) String() string {
-	switch wf {
+// String returns the string representation of a WorldFace.
+func (f WorldFace) String() string {
+	switch f {
+	case WorldFaceNone:
+		return "None"
 	case WorldFaceTop:
-		return "top"
+		return "Top"
 	case WorldFaceBottom:
-		return "bottom"
+		return "Bottom"
 	case WorldFaceLeft:
-		return "left"
+		return "Left"
 	case WorldFaceRight:
-		return "right"
+		return "Right"
 	case WorldFaceFront:
-		return "front"
+		return "Front"
 	case WorldFaceBack:
-		return "back"
+		return "Back"
 	default:
-		return "unknown"
+		return "Unknown"
 	}
 }
 

@@ -16,6 +16,9 @@ type WorldCollisionSystem struct {
 	world             *world.Planet
 	gravity           mgl32.Vec3
 	debugFrameCounter int
+
+	// Dynamic gravity system
+	gravitySystem *GravitySystem
 }
 
 // NewWorldCollisionSystem crée un nouveau système de collision monde
@@ -23,8 +26,13 @@ func NewWorldCollisionSystem(physicsManager *PhysicsManager, world *world.Planet
 	return &WorldCollisionSystem{
 		physicsManager: physicsManager,
 		world:          world,
-		gravity:        mgl32.Vec3{0, -50, 0}, // Increased gravity
+		gravity:        mgl32.Vec3{0, -50, 0}, // Fallback gravity (will be overridden by dynamic system)
 	}
+}
+
+// SetGravitySystem sets the dynamic gravity system
+func (wcs *WorldCollisionSystem) SetGravitySystem(gravitySystem *GravitySystem) {
+	wcs.gravitySystem = gravitySystem
 }
 
 // SetGravity définit la gravité du monde
@@ -182,44 +190,67 @@ func (wcs *WorldCollisionSystem) calculateCollisionNormal(objBox, blockBox geom.
 // Epsilon utilisé pour éviter les problèmes d'arrondi lors du repositionnement
 const groundEpsilon = 0.1
 
-// ResolveCollision résout une collision entre un objet et un bloc
-func (wcs *WorldCollisionSystem) ResolveCollision(obj *PhysicsObject, normal mgl32.Vec3, blockBox *geom.BoundingBox) {
-	if blockBox == nil {
-		return
-	}
-	const epsilon = 0.001 // Petite marge pour éviter de rester coincé
-	objBox := obj.GetBoundingBox()
+// resolveWorldCollisions résout les collisions pour un objet donné et retourne le nombre de collisions.
+// Il gère maintenant la détection du sol en fonction de la gravité dynamique.
+func (wcs *WorldCollisionSystem) resolveWorldCollisions(obj *PhysicsObject, maxIterations int) int {
+	collisionCount := 0
+	obj.SetGrounded(false) // Réinitialiser l'état 'grounded' à chaque frame
 
-	pX := (objBox.GetSize().X()/2 + blockBox.GetSize().X()/2) - mgl32.Abs(objBox.GetCenter().X()-blockBox.GetCenter().X())
-	pY := (objBox.GetSize().Y()/2 + blockBox.GetSize().Y()/2) - mgl32.Abs(objBox.GetCenter().Y()-blockBox.GetCenter().Y())
-	pZ := (objBox.GetSize().Z()/2 + blockBox.GetSize().Z()/2) - mgl32.Abs(objBox.GetCenter().Z()-blockBox.GetCenter().Z())
-
-	pos := obj.GetPosition()
-	// Résoudre en priorité la collision avec la plus grande pénétration
-	if pX < pY && pX < pZ {
-		pos[0] += normal.X() * (pX + epsilon)
-	} else if pY < pX && pY < pZ {
-		pos[1] += normal.Y() * (pY + epsilon)
+	// Obtenir la direction de la gravité pour cet objet
+	var gravityDir mgl32.Vec3
+	if wcs.gravitySystem != nil {
+		gravityDir = wcs.gravitySystem.CalculateGravityInfo(obj.GetPosition()).Direction
 	} else {
-		pos[2] += normal.Z() * (pZ + epsilon)
+		gravityDir = mgl32.Vec3{0, -1, 0} // Fallback
 	}
+	upDir := gravityDir.Mul(-1) // La direction "vers le haut" est l'opposé de la gravité
 
-	obj.SetPosition(pos)
+	for i := 0; i < maxIterations; i++ {
+		collided, normal, blockBox := wcs.CheckCollision(obj)
+		if !collided {
+			break // Pas de collision, on arrête
+		}
+		collisionCount++
 
-	vel := obj.GetVelocity()
-	// Si la collision est avec le sol, on stoppe la vélocité verticale.
-	// Pour les murs, on la laisse intacte pour permettre de glisser.
-	if normal.Y() > 0.5 {
-		vel[1] = 0
+		// --- Résolution de la Pénétration ---
+		const epsilon = 0.001
+		objBox := obj.GetBoundingBox()
+		centerDist := objBox.GetCenter().Sub(blockBox.GetCenter())
+		pX := (objBox.GetSize().X()/2 + blockBox.GetSize().X()/2) - mgl32.Abs(centerDist.X())
+		pY := (objBox.GetSize().Y()/2 + blockBox.GetSize().Y()/2) - mgl32.Abs(centerDist.Y())
+		pZ := (objBox.GetSize().Z()/2 + blockBox.GetSize().Z()/2) - mgl32.Abs(centerDist.Z())
+
+		pos := obj.GetPosition()
+		if pX < pY && pX < pZ {
+			pos[0] += normal.X() * (pX + epsilon)
+		} else if pY < pZ {
+			pos[1] += normal.Y() * (pY + epsilon)
+		} else {
+			pos[2] += normal.Z() * (pZ + epsilon)
+		}
+		obj.SetPosition(pos)
+
+		// --- Détection du Sol (Grounded) ---
+		// Un objet est au sol si la normale de collision est opposée à la direction "vers le haut"
+		// Le produit scalaire doit être proche de 1 (vecteurs alignés)
+		dot := normal.Dot(upDir)
+		if dot > 0.7 { // Seuil généreux pour les surfaces non parfaitement plates
+			obj.SetGrounded(true)
+		}
+
+		// --- Réponse de la Vitesse ---
+		vel := obj.GetVelocity()
+		// Si l'objet est au sol, on annule toute la vitesse dans la direction de la gravité
+		if obj.IsGrounded() {
+			// Projeter la vitesse sur le plan du sol
+			vel = vel.Sub(gravityDir.Mul(vel.Dot(gravityDir)))
+		} else {
+			// Sinon, c'est un mur, on ne fait que glisser
+			vel = vel.Sub(normal.Mul(vel.Dot(normal) * 1.1)) // Appliquer une légère restitution
+		}
+		obj.SetVelocity(vel)
 	}
-
-	// Projeter la vélocité pour glisser le long des murs
-	vel = vel.Sub(normal.Mul(vel.Dot(normal)))
-	obj.SetVelocity(vel)
-
-	if normal.Y() > 0 {
-		obj.SetGrounded(true)
-	}
+	return collisionCount
 }
 
 // Update met à jour le système de collision monde
@@ -237,81 +268,49 @@ func (wcs *WorldCollisionSystem) Update(deltaTime float32) {
 		startGrounded := obj.IsGrounded()
 
 		// Reset grounded state at the beginning of the frame
-		obj.SetGrounded(wcs.isObjectGrounded(obj))
+		obj.SetGrounded(false)
 
-		if !obj.IsGrounded() {
-			obj.ApplyForce(wcs.gravity.Mul(obj.GetMass()))
+		// Apply gravity and orientation - use dynamic gravity if available, otherwise fallback
+		if wcs.gravitySystem != nil {
+			// Use dynamic gravity system which applies both force and orientation
+			wcs.gravitySystem.ApplyGravityToObject(obj)
+		} else {
+			// Fallback to static gravity (force only)
+			gravityForce := wcs.gravity.Mul(obj.GetMass())
+			obj.ApplyForce(gravityForce)
 		}
 
+		// Update physics (integration step)
 		obj.Update(deltaTime)
 
-		collisionCount := 0
-		for i := 0; i < maxCollisionIterations; i++ {
-			hasCollision, normal, blockBox := wcs.CheckCollision(obj)
-			if !hasCollision {
-				break
-			}
-			collisionCount++
-			wcs.ResolveCollision(obj, normal, blockBox)
-		}
+		// Resolve collisions with the world
+		collisions := wcs.resolveWorldCollisions(obj, maxCollisionIterations)
 
-		// 4. Appliquer la friction et réinitialiser l'accélération
-		obj.SetGrounded(wcs.isObjectGrounded(obj))
-		if obj.IsGrounded() {
-			currentVel := obj.GetVelocity()
-			currentVel[0] *= 0.9 // Friction horizontale
-			currentVel[2] *= 0.9 // Friction horizontale
-			obj.SetVelocity(currentVel)
-		}
-		obj.SetAcceleration(mgl32.Vec3{0, 0, 0})
-
-		// Debug logging for player
 		if isPlayer {
-			endPos := obj.GetPosition()
-			endGrounded := obj.IsGrounded()
-			velocity := obj.GetVelocity()
-
-			// Log only when there are significant changes or issues
-			if collisionCount > 3 || startGrounded != endGrounded ||
-				(wcs.debugFrameCounter%300 == 0 && (velocity.Len() > 0.1 || collisionCount > 0)) {
-				log.Printf("Player Physics: Pos(%.1f,%.1f,%.1f)→(%.1f,%.1f,%.1f) Vel(%.1f,%.1f,%.1f) Grounded:%v→%v Collisions:%d",
+			wcs.debugFrameCounter++
+			if wcs.debugFrameCounter%5 == 0 { // Log every 5 frames for player
+				log.Printf("Player Physics: Pos(%.1f,%.1f,%.1f)→(%.1f,%.1f,%.1f) Vel(%.1f,%.1f,%.1f) Grounded:%t→%t Collisions:%d",
 					startPos.X(), startPos.Y(), startPos.Z(),
-					endPos.X(), endPos.Y(), endPos.Z(),
-					velocity.X(), velocity.Y(), velocity.Z(),
-					startGrounded, endGrounded, collisionCount)
+					obj.GetPosition().X(), obj.GetPosition().Y(), obj.GetPosition().Z(),
+					obj.GetVelocity().X(), obj.GetVelocity().Y(), obj.GetVelocity().Z(),
+					startGrounded, obj.IsGrounded(), collisions)
 			}
 		}
 	}
-	wcs.debugFrameCounter++
 }
 
-// isObjectGrounded vérifie si un objet est au sol
+// isObjectGrounded vérifie si l'objet est sur le sol
+// DEPRECATED: La logique est maintenant dans resolveWorldCollisions
 func (wcs *WorldCollisionSystem) isObjectGrounded(obj *PhysicsObject) bool {
-	const groundCheckDistance = 0.2
-	box := obj.GetBoundingBox()
-	center := box.GetCenter()
-
-	checkPoints := []mgl32.Vec3{
-		{center.X(), box.Min.Y(), center.Z()},
-		{box.Min.X(), box.Min.Y(), box.Min.Z()},
-		{box.Max.X(), box.Min.Y(), box.Min.Z()},
-		{box.Min.X(), box.Min.Y(), box.Max.Z()},
-		{box.Max.X(), box.Min.Y(), box.Max.Z()},
+	if obj == nil {
+		return false
 	}
-
-	for _, point := range checkPoints {
-		checkPos := point.Add(mgl32.Vec3{0, -groundCheckDistance, 0})
-		block, _, err := wcs.world.GetBlockAt(int(checkPos.X()), int(checkPos.Y()), int(checkPos.Z()))
-
-		if err == nil && block != nil && block.Type != world.BlockTypeAir {
-			// Found solid ground beneath one of the check points
-			return true
-		}
-	}
-	return false
+	// On se fie maintenant à la détection faite pendant la résolution des collisions.
+	// On pourrait garder une vérification par raycast ici si nécessaire.
+	return obj.IsGrounded()
 }
 
-// PlaceBlock place un bloc à la position spécifiée
+// PlaceBlock place un bloc dans le monde et met à jour les chunks adjacents
 func (wcs *WorldCollisionSystem) PlaceBlock(position mgl32.Vec3, blockType world.BlockType) error {
 	if wcs.world == nil {
 		return fmt.Errorf("world is nil")

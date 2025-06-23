@@ -155,6 +155,21 @@ func (po *PhysicsObject) SetPosition(position mgl32.Vec3) {
 	po.lastUpdate = time.Now()
 }
 
+// GetRotation returns the current rotation
+func (po *PhysicsObject) GetRotation() mgl32.Quat {
+	po.mu.RLock()
+	defer po.mu.RUnlock()
+	return po.rotation
+}
+
+// SetRotation sets the rotation
+func (po *PhysicsObject) SetRotation(rotation mgl32.Quat) {
+	po.mu.Lock()
+	defer po.mu.Unlock()
+	po.rotation = rotation
+	po.lastUpdate = time.Now()
+}
+
 // GetVelocity returns the current velocity
 func (po *PhysicsObject) GetVelocity() mgl32.Vec3 {
 	po.mu.RLock()

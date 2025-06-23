@@ -157,6 +157,14 @@ func (c *Camera) GetCurrentFace() WorldFace {
 	return c.currentFace
 }
 
+// SetFace sets the current world face (can be called after initialization)
+func (c *Camera) SetFace(face WorldFace) {
+	if c.currentFace != face {
+		c.currentFace = face
+		c.updateVectors() // Recalculate vectors with new face transformation
+	}
+}
+
 // GetVectors returns the current camera vectors
 func (c *Camera) GetVectors() *CameraVectors {
 	return &CameraVectors{
@@ -168,7 +176,9 @@ func (c *Camera) GetVectors() *CameraVectors {
 
 // GetViewMatrix returns the view matrix for rendering
 func (c *Camera) GetViewMatrix() mgl32.Mat4 {
-	return mgl32.LookAtV(c.position, c.position.Add(c.front), c.up)
+	target := c.position.Add(c.front)
+
+	return mgl32.LookAtV(c.position, target, c.up)
 }
 
 // GetFrustum returns the camera's frustum for culling
@@ -259,15 +269,23 @@ func (c *Camera) updateVectors() {
 }
 
 // getFaceTransform returns the transformation matrix for the current world face
+// These transformations ensure that:
+// - Front vector stays horizontal to the face plane
+// - Up vector points away from the center of the cube
+// - The vectors are consistent with the gravity system
 func (c *Camera) getFaceTransform() mgl32.Mat4 {
 	switch c.currentFace {
 	case WorldFaceTop:
+		// No transformation needed - canonical orientation
 		return mgl32.Ident4()
 	case WorldFaceBottom:
+		// Flip upside down (180° around X axis)
 		return mgl32.HomogRotate3DX(mgl32.DegToRad(180))
 	case WorldFaceLeft:
+		// Rotate 90° around Z axis (roll left)
 		return mgl32.HomogRotate3DZ(mgl32.DegToRad(90))
 	case WorldFaceRight:
+		// Rotate -90° around Z axis (roll right)
 		return mgl32.HomogRotate3DZ(mgl32.DegToRad(-90))
 	case WorldFaceFront:
 		return mgl32.HomogRotate3DX(mgl32.DegToRad(90)).Mul4(mgl32.HomogRotate3DY(mgl32.DegToRad(90)))
