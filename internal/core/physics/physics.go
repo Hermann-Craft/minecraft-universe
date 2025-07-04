@@ -150,7 +150,7 @@ func (po *PhysicsObject) SetPosition(position mgl32.Vec3) {
 	po.position = position
 	// Mettre à jour la bounding box dès que la position change
 	if po.collider != nil {
-		po.boundingBox = po.collider.GetBoundingBox(po.position, po.scale)
+		po.boundingBox = po.collider.GetBoundingBox(po.position, po.rotation, po.scale)
 	}
 	po.lastUpdate = time.Now()
 }
@@ -167,7 +167,17 @@ func (po *PhysicsObject) SetRotation(rotation mgl32.Quat) {
 	po.mu.Lock()
 	defer po.mu.Unlock()
 	po.rotation = rotation
+	if po.collider != nil {
+		po.boundingBox = po.collider.GetBoundingBox(po.position, po.rotation, po.scale)
+	}
 	po.lastUpdate = time.Now()
+}
+
+// GetScale returns the current scale
+func (po *PhysicsObject) GetScale() mgl32.Vec3 {
+	po.mu.RLock()
+	defer po.mu.RUnlock()
+	return po.scale
 }
 
 // GetVelocity returns the current velocity
@@ -231,7 +241,7 @@ func (po *PhysicsObject) SetCollider(collider Collider) {
 	po.mu.Lock()
 	defer po.mu.Unlock()
 	po.collider = collider
-	po.boundingBox = collider.GetBoundingBox(po.position, po.scale)
+	po.boundingBox = collider.GetBoundingBox(po.position, po.rotation, po.scale)
 	po.lastUpdate = time.Now()
 }
 
@@ -247,7 +257,7 @@ func (po *PhysicsObject) UpdateBoundingBox() {
 	po.mu.Lock()
 	defer po.mu.Unlock()
 	if po.collider != nil {
-		po.boundingBox = po.collider.GetBoundingBox(po.position, po.scale)
+		po.boundingBox = po.collider.GetBoundingBox(po.position, po.rotation, po.scale)
 	}
 	po.lastUpdate = time.Now()
 }
@@ -369,7 +379,7 @@ func (po *PhysicsObject) Update(deltaTime float32) {
 
 	// Update bounding box
 	if po.collider != nil {
-		po.boundingBox = po.collider.GetBoundingBox(po.position, po.scale)
+		po.boundingBox = po.collider.GetBoundingBox(po.position, po.rotation, po.scale)
 	}
 
 	po.lastUpdate = time.Now()

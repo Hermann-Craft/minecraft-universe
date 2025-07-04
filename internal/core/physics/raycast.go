@@ -91,15 +91,16 @@ func (rs *RaycastSystem) Raycast(origin, direction mgl32.Vec3, objects []*Physic
 		}
 
 		position := obj.GetPosition()
-		scale := mgl32.Vec3{1, 1, 1} // TODO: Get actual scale
+		rotation := obj.GetRotation()
+		scale := obj.GetScale()
 
-		distance, hit := collider.Raycast(origin, dir, position, scale)
+		distance, hit := collider.Raycast(origin, dir, position, rotation, scale)
 		if hit && distance <= rs.maxDistance {
 			if closestHit == nil || distance < closestHit.Distance {
 				closestHit = &RaycastHit{
 					Distance: distance,
 					Point:    origin.Add(dir.Mul(distance)),
-					Normal:   rs.calculateNormal(origin, dir, distance, collider, position, scale),
+					Normal:   rs.calculateNormal(origin, dir, distance, collider, position, rotation, scale),
 					Object:   obj,
 				}
 			}
@@ -121,10 +122,10 @@ func (rs *RaycastSystem) Raycast(origin, direction mgl32.Vec3, objects []*Physic
 }
 
 // calculateNormal calculates the normal at the raycast hit point
-func (rs *RaycastSystem) calculateNormal(origin, direction mgl32.Vec3, distance float32, collider Collider, position, scale mgl32.Vec3) mgl32.Vec3 {
+func (rs *RaycastSystem) calculateNormal(origin, direction mgl32.Vec3, distance float32, collider Collider, position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) mgl32.Vec3 {
 	// For box colliders, calculate normal based on which face was hit
 	if boxCollider, ok := collider.(*BoxCollider); ok {
-		return rs.calculateBoxNormal(origin, direction, distance, boxCollider, position, scale)
+		return rs.calculateBoxNormal(origin, direction, distance, boxCollider, position, rotation, scale)
 	}
 
 	// For sphere colliders, normal points from center to hit point
@@ -139,30 +140,44 @@ func (rs *RaycastSystem) calculateNormal(origin, direction mgl32.Vec3, distance 
 }
 
 // calculateBoxNormal calculates the normal for a box collider hit
-func (rs *RaycastSystem) calculateBoxNormal(origin, direction mgl32.Vec3, distance float32, collider *BoxCollider, position, scale mgl32.Vec3) mgl32.Vec3 {
+func (rs *RaycastSystem) calculateBoxNormal(origin, direction mgl32.Vec3, distance float32, collider *BoxCollider, position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) mgl32.Vec3 {
 	hitPoint := origin.Add(direction.Mul(distance))
-	localPoint := hitPoint.Sub(position)
-	scaledSize := collider.Size.Mul(scale.X()) // Use X scale for all dimensions
+
+	// Transform hit point to the box's local space
+	invRotation := rotation.Inverse()
+	localPoint := invRotation.Rotate(hitPoint.Sub(position))
+
+	scaledSize := mgl32.Vec3{collider.Size[0] * scale[0], collider.Size[1] * scale[1], collider.Size[2] * scale[2]}
 
 	// Find which face was hit by checking which component is closest to the half-extent
 	normal := mgl32.Vec3{0, 0, 0}
+	maxComponent := float32(0)
 
 	// Check X faces
-	if float32(math.Abs(float64(localPoint.X()))) >= scaledSize.X()-0.01 {
+	distX := scaledSize.X() - float32(math.Abs(float64(localPoint.X())))
+	if distX < 0.0001 { // Epsilon for floating point
 		if localPoint.X() > 0 {
 			normal = mgl32.Vec3{1, 0, 0}
 		} else {
 			normal = mgl32.Vec3{-1, 0, 0}
 		}
-	} else if float32(math.Abs(float64(localPoint.Y()))) >= scaledSize.Y()-0.01 {
-		// Check Y faces
+		maxComponent = float32(math.Abs(float64(localPoint.X())))
+	}
+
+	// Check Y faces
+	distY := scaledSize.Y() - float32(math.Abs(float64(localPoint.Y())))
+	if distY < 0.0001 && float32(math.Abs(float64(localPoint.Y()))) > maxComponent {
 		if localPoint.Y() > 0 {
 			normal = mgl32.Vec3{0, 1, 0}
 		} else {
 			normal = mgl32.Vec3{0, -1, 0}
 		}
-	} else if float32(math.Abs(float64(localPoint.Z()))) >= scaledSize.Z()-0.01 {
-		// Check Z faces
+		maxComponent = float32(math.Abs(float64(localPoint.Y())))
+	}
+
+	// Check Z faces
+	distZ := scaledSize.Z() - float32(math.Abs(float64(localPoint.Z())))
+	if distZ < 0.0001 && float32(math.Abs(float64(localPoint.Z()))) > maxComponent {
 		if localPoint.Z() > 0 {
 			normal = mgl32.Vec3{0, 0, 1}
 		} else {
@@ -170,7 +185,8 @@ func (rs *RaycastSystem) calculateBoxNormal(origin, direction mgl32.Vec3, distan
 		}
 	}
 
-	return normal
+	// Transform the normal back to world space
+	return rotation.Rotate(normal)
 }
 
 // RaycastAll performs a raycast and returns all hits
@@ -196,14 +212,15 @@ func (rs *RaycastSystem) RaycastAll(origin, direction mgl32.Vec3, objects []*Phy
 		}
 
 		position := obj.GetPosition()
-		scale := mgl32.Vec3{1, 1, 1} // TODO: Get actual scale
+		rotation := obj.GetRotation()
+		scale := obj.GetScale()
 
-		distance, hit := collider.Raycast(origin, dir, position, scale)
+		distance, hit := collider.Raycast(origin, dir, position, rotation, scale)
 		if hit && distance <= rs.maxDistance {
 			hits = append(hits, RaycastHit{
 				Distance: distance,
 				Point:    origin.Add(dir.Mul(distance)),
-				Normal:   rs.calculateNormal(origin, dir, distance, collider, position, scale),
+				Normal:   rs.calculateNormal(origin, dir, distance, collider, position, rotation, scale),
 				Object:   obj,
 			})
 		}
@@ -244,18 +261,19 @@ func (rs *RaycastSystem) SphereCast(origin, direction mgl32.Vec3, radius float32
 		}
 
 		position := obj.GetPosition()
-		scale := mgl32.Vec3{1, 1, 1} // TODO: Get actual scale
+		rotation := obj.GetRotation()
+		scale := obj.GetScale()
 
 		// Expand the collider by the sphere radius
 		expandedCollider := rs.expandCollider(collider, radius)
 
-		distance, hit := expandedCollider.Raycast(origin, dir, position, scale)
+		distance, hit := expandedCollider.Raycast(origin, dir, position, rotation, scale)
 		if hit && distance <= rs.maxDistance {
 			if closestHit == nil || distance < closestHit.Distance {
 				closestHit = &RaycastHit{
 					Distance: distance,
 					Point:    origin.Add(dir.Mul(distance)),
-					Normal:   rs.calculateNormal(origin, dir, distance, collider, position, scale),
+					Normal:   rs.calculateNormal(origin, dir, distance, collider, position, rotation, scale),
 					Object:   obj,
 				}
 			}

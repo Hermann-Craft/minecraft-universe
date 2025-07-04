@@ -10,14 +10,14 @@ import (
 
 // Collider interface for different types of colliders
 type Collider interface {
-	// GetBoundingBox returns the bounding box for the collider at the given position and scale
-	GetBoundingBox(position, scale mgl32.Vec3) geom.BoundingBox
+	// GetBoundingBox returns the bounding box for the collider at the given position, rotation, and scale
+	GetBoundingBox(position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) geom.BoundingBox
 
 	// Intersects checks if this collider intersects with another collider
-	Intersects(other Collider, position1, scale1, position2, scale2 mgl32.Vec3) bool
+	Intersects(other Collider, position1 mgl32.Vec3, rotation1 mgl32.Quat, scale1 mgl32.Vec3, position2 mgl32.Vec3, rotation2 mgl32.Quat, scale2 mgl32.Vec3) bool
 
 	// Raycast performs a raycast against this collider
-	Raycast(origin, direction mgl32.Vec3, position, scale mgl32.Vec3) (float32, bool)
+	Raycast(origin, direction, position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) (float32, bool)
 }
 
 // BoxCollider represents a box-shaped collider
@@ -33,44 +33,66 @@ func NewBoxCollider(size mgl32.Vec3) *BoxCollider {
 }
 
 // GetBoundingBox returns the bounding box for the box collider
-func (bc *BoxCollider) GetBoundingBox(position, scale mgl32.Vec3) geom.BoundingBox {
-	scaledSize := bc.Size.Mul(scale.X()) // Use X scale for all dimensions
-	return geom.NewBoundingBox(
-		position.Sub(scaledSize),
-		position.Add(scaledSize),
-	)
+func (bc *BoxCollider) GetBoundingBox(position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) geom.BoundingBox {
+	// The 8 corners of the OBB in local space
+	scaledHalfExtents := mgl32.Vec3{bc.Size[0] * scale[0], bc.Size[1] * scale[1], bc.Size[2] * scale[2]}
+	corners := [8]mgl32.Vec3{
+		{-scaledHalfExtents[0], -scaledHalfExtents[1], -scaledHalfExtents[2]},
+		{scaledHalfExtents[0], -scaledHalfExtents[1], -scaledHalfExtents[2]},
+		{scaledHalfExtents[0], scaledHalfExtents[1], -scaledHalfExtents[2]},
+		{-scaledHalfExtents[0], scaledHalfExtents[1], -scaledHalfExtents[2]},
+		{-scaledHalfExtents[0], -scaledHalfExtents[1], scaledHalfExtents[2]},
+		{scaledHalfExtents[0], -scaledHalfExtents[1], scaledHalfExtents[2]},
+		{scaledHalfExtents[0], scaledHalfExtents[1], scaledHalfExtents[2]},
+		{-scaledHalfExtents[0], scaledHalfExtents[1], scaledHalfExtents[2]},
+	}
+
+	// Rotate corners and translate them to world space to find the new min/max for the AABB
+	// Initialize with the first corner
+	worldCorner := position.Add(rotation.Rotate(corners[0]))
+	min, max := worldCorner, worldCorner
+
+	for i := 1; i < 8; i++ {
+		worldCorner = position.Add(rotation.Rotate(corners[i]))
+		min[0] = float32(math.Min(float64(min[0]), float64(worldCorner[0])))
+		min[1] = float32(math.Min(float64(min[1]), float64(worldCorner[1])))
+		min[2] = float32(math.Min(float64(min[2]), float64(worldCorner[2])))
+		max[0] = float32(math.Max(float64(max[0]), float64(worldCorner[0])))
+		max[1] = float32(math.Max(float64(max[1]), float64(worldCorner[1])))
+		max[2] = float32(math.Max(float64(max[2]), float64(worldCorner[2])))
+	}
+
+	return geom.NewBoundingBox(min, max)
 }
 
 // Intersects checks if two box colliders intersect
-func (bc *BoxCollider) Intersects(other Collider, position1, scale1, position2, scale2 mgl32.Vec3) bool {
-	box1 := bc.GetBoundingBox(position1, scale1)
-
-	if otherBox, ok := other.(*BoxCollider); ok {
-		box2 := otherBox.GetBoundingBox(position2, scale2)
-		return box1.Intersects(box2)
-	}
-
-	// For other collider types, use bounding box intersection
-	otherBox := other.GetBoundingBox(position2, scale2)
+func (bc *BoxCollider) Intersects(other Collider, position1 mgl32.Vec3, rotation1 mgl32.Quat, scale1 mgl32.Vec3, position2 mgl32.Vec3, rotation2 mgl32.Quat, scale2 mgl32.Vec3) bool {
+	// AABB intersection is a broad-phase check.
+	// For accurate OBB-OBB intersection, we would need SAT (Separating Axis Theorem).
+	box1 := bc.GetBoundingBox(position1, rotation1, scale1)
+	otherBox := other.GetBoundingBox(position2, rotation2, scale2)
 	return box1.Intersects(otherBox)
 }
 
 // Raycast performs a raycast against the box collider
-func (bc *BoxCollider) Raycast(origin, direction mgl32.Vec3, position, scale mgl32.Vec3) (float32, bool) {
-	// Transform ray to local space
-	localOrigin := origin.Sub(position)
-	scaledSize := bc.Size.Mul(scale.X()) // Use X scale for all dimensions
+func (bc *BoxCollider) Raycast(origin, direction, position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) (float32, bool) {
+	// Transform ray to local space of the box
+	invRotation := rotation.Inverse()
+	localOrigin := invRotation.Rotate(origin.Sub(position))
+	localDirection := invRotation.Rotate(direction)
 
-	// Ray-box intersection using slab method
-	tMin := (localOrigin.X() - scaledSize.X()) / direction.X()
-	tMax := (localOrigin.X() + scaledSize.X()) / direction.X()
+	effectiveHalfExtents := mgl32.Vec3{bc.Size[0] * scale[0], bc.Size[1] * scale[1], bc.Size[2] * scale[2]}
+
+	// Ray-box intersection using slab method in local space
+	tMin := (effectiveHalfExtents.X()*-1 - localOrigin.X()) / localDirection.X()
+	tMax := (effectiveHalfExtents.X() - localOrigin.X()) / localDirection.X()
 
 	if tMin > tMax {
 		tMin, tMax = tMax, tMin
 	}
 
-	tyMin := (localOrigin.Y() - scaledSize.Y()) / direction.Y()
-	tyMax := (localOrigin.Y() + scaledSize.Y()) / direction.Y()
+	tyMin := (effectiveHalfExtents.Y()*-1 - localOrigin.Y()) / localDirection.Y()
+	tyMax := (effectiveHalfExtents.Y() - localOrigin.Y()) / localDirection.Y()
 
 	if tyMin > tyMax {
 		tyMin, tyMax = tyMax, tyMin
@@ -88,8 +110,8 @@ func (bc *BoxCollider) Raycast(origin, direction mgl32.Vec3, position, scale mgl
 		tMax = tyMax
 	}
 
-	tzMin := (localOrigin.Z() - scaledSize.Z()) / direction.Z()
-	tzMax := (localOrigin.Z() + scaledSize.Z()) / direction.Z()
+	tzMin := (effectiveHalfExtents.Z()*-1 - localOrigin.Z()) / localDirection.Z()
+	tzMax := (effectiveHalfExtents.Z() - localOrigin.Z()) / localDirection.Z()
 
 	if tzMin > tzMax {
 		tzMin, tzMax = tzMax, tzMin
@@ -127,7 +149,8 @@ func NewSphereCollider(radius float32) *SphereCollider {
 }
 
 // GetBoundingBox returns the bounding box for the sphere collider
-func (sc *SphereCollider) GetBoundingBox(position, scale mgl32.Vec3) geom.BoundingBox {
+func (sc *SphereCollider) GetBoundingBox(position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) geom.BoundingBox {
+	// Rotation does not affect the AABB of a sphere
 	scaledRadius := sc.Radius * scale.X() // Use X scale as radius scale
 	return geom.NewBoundingBox(
 		position.Sub(mgl32.Vec3{scaledRadius, scaledRadius, scaledRadius}),
@@ -136,7 +159,7 @@ func (sc *SphereCollider) GetBoundingBox(position, scale mgl32.Vec3) geom.Boundi
 }
 
 // Intersects checks if two sphere colliders intersect
-func (sc *SphereCollider) Intersects(other Collider, position1, scale1, position2, scale2 mgl32.Vec3) bool {
+func (sc *SphereCollider) Intersects(other Collider, position1 mgl32.Vec3, rotation1 mgl32.Quat, scale1 mgl32.Vec3, position2 mgl32.Vec3, rotation2 mgl32.Quat, scale2 mgl32.Vec3) bool {
 	if otherSphere, ok := other.(*SphereCollider); ok {
 		scaledRadius1 := sc.Radius * scale1.X()
 		scaledRadius2 := otherSphere.Radius * scale2.X()
@@ -145,13 +168,14 @@ func (sc *SphereCollider) Intersects(other Collider, position1, scale1, position
 	}
 
 	// For other collider types, use bounding box intersection
-	box1 := sc.GetBoundingBox(position1, scale1)
-	otherBox := other.GetBoundingBox(position2, scale2)
+	box1 := sc.GetBoundingBox(position1, rotation1, scale1)
+	otherBox := other.GetBoundingBox(position2, rotation2, scale2)
 	return box1.Intersects(otherBox)
 }
 
 // Raycast performs a raycast against the sphere collider
-func (sc *SphereCollider) Raycast(origin, direction mgl32.Vec3, position, scale mgl32.Vec3) (float32, bool) {
+func (sc *SphereCollider) Raycast(origin, direction, position mgl32.Vec3, rotation mgl32.Quat, scale mgl32.Vec3) (float32, bool) {
+	// Rotation is ignored for spheres
 	// Transform ray to local space
 	localOrigin := origin.Sub(position)
 	scaledRadius := sc.Radius * scale.X()
@@ -251,8 +275,11 @@ func (cd *CollisionDetector) DetectCollisions() []CollisionInfo {
 					continue
 				}
 
-				collision := cd.CheckCollision(obj1, obj2)
-				if collision != nil {
+				if obj1.IsStatic() && obj2.IsStatic() {
+					continue
+				}
+
+				if collision := cd.CheckCollision(obj1, obj2); collision != nil {
 					collisions = append(collisions, *collision)
 				}
 			}
@@ -262,38 +289,25 @@ func (cd *CollisionDetector) DetectCollisions() []CollisionInfo {
 	return collisions
 }
 
-// CheckCollision checks collision between two physics objects
+// CheckCollision checks for collision between two physics objects
 func (cd *CollisionDetector) CheckCollision(obj1, obj2 *PhysicsObject) *CollisionInfo {
-	collider1 := obj1.GetCollider()
-	collider2 := obj2.GetCollider()
-
-	if collider1 == nil || collider2 == nil {
+	if obj1.GetCollider() == nil || obj2.GetCollider() == nil {
 		return nil
 	}
 
-	position1 := obj1.GetPosition()
-	scale1 := mgl32.Vec3{1, 1, 1} // TODO: Get actual scale
-	position2 := obj2.GetPosition()
-	scale2 := mgl32.Vec3{1, 1, 1} // TODO: Get actual scale
-
-	if !collider1.Intersects(collider2, position1, scale1, position2, scale2) {
-		return nil
+	if obj1.GetCollider().Intersects(
+		obj2.GetCollider(),
+		obj1.GetPosition(), obj1.GetRotation(), obj1.GetScale(),
+		obj2.GetPosition(), obj2.GetRotation(), obj2.GetScale(),
+	) {
+		// Basic collision info for now, no resolution yet
+		return &CollisionInfo{
+			Object1:     obj1,
+			Object2:     obj2,
+			Normal:      obj2.GetPosition().Sub(obj1.GetPosition()).Normalize(),
+			Penetration: 0, // Placeholder
+		}
 	}
 
-	// Calculate collision normal and penetration
-	box1 := collider1.GetBoundingBox(position1, scale1)
-	box2 := collider2.GetBoundingBox(position2, scale2)
-
-	// Simple collision response for now
-	center1 := box1.GetCenter()
-	center2 := box2.GetCenter()
-	normal := center2.Sub(center1).Normalize()
-
-	return &CollisionInfo{
-		Object1:     obj1,
-		Object2:     obj2,
-		Normal:      normal,
-		Penetration: 0.1, // TODO: Calculate actual penetration
-		Point:       center1.Add(center2).Mul(0.5),
-	}
+	return nil
 }

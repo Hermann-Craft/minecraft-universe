@@ -75,6 +75,8 @@ func (ftm *FaceTransitionManager) calculateTargetAngles(fromFace, toFace WorldFa
 		yaw = 180
 	case fromFace == WorldFaceTop && toFace == WorldFaceLeft:
 		yaw = 180
+	case fromFace == WorldFaceTop && toFace == WorldFaceBack:
+		yaw = 90
 	case fromFace == WorldFaceFront && toFace == WorldFaceRight:
 		yaw = -currentYaw
 	case fromFace == WorldFaceFront && toFace == WorldFaceBottom:

@@ -102,6 +102,9 @@ func (p *Planet) GetError() error {
 
 // GetChunk returns a chunk at the given coordinates
 func (p *Planet) GetChunk(x, y, z int) (*Chunk, error) {
+	if p.Chunks == nil {
+		return nil, fmt.Errorf("planet chunks not initialized")
+	}
 	if x < 0 || x >= int(p.Size.X()) ||
 		y < 0 || y >= int(p.Size.Y()) ||
 		z < 0 || z >= int(p.Size.Z()) {
@@ -141,6 +144,11 @@ func (p *Planet) GetBoundingBox() geom.BoundingBox {
 // GetBlockAt retrieves a block at the given world coordinates.
 // It returns the block, the chunk it belongs to, and its local coordinates.
 func (p *Planet) GetBlockAt(x, y, z int) (*Block, *Chunk, error) {
+	// Check for negative coordinates first
+	if x < 0 || y < 0 || z < 0 {
+		return nil, nil, fmt.Errorf("block coordinates cannot be negative: (%d, %d, %d)", x, y, z)
+	}
+
 	chunkX, chunkY, chunkZ := x/p.ChunkSize.Width, y/p.ChunkSize.Height, z/p.ChunkSize.Depth
 	bx, by, bz := x%p.ChunkSize.Width, y%p.ChunkSize.Height, z%p.ChunkSize.Depth
 	if bx < 0 {
@@ -163,6 +171,11 @@ func (p *Planet) GetBlockAt(x, y, z int) (*Block, *Chunk, error) {
 
 // SetBlockAt sets a block at the given world coordinates
 func (p *Planet) SetBlockAt(x, y, z int, block Block) error {
+	// Check for negative coordinates first
+	if x < 0 || y < 0 || z < 0 {
+		return fmt.Errorf("block coordinates cannot be negative: (%d, %d, %d)", x, y, z)
+	}
+
 	chunkX, chunkY, chunkZ := x/p.ChunkSize.Width, y/p.ChunkSize.Height, z/p.ChunkSize.Depth
 	bx, by, bz := x%p.ChunkSize.Width, y%p.ChunkSize.Height, z%p.ChunkSize.Depth
 	if bx < 0 {

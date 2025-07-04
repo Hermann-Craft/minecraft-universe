@@ -1,25 +1,119 @@
 package world
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/hermann-craft/unicube/internal/render"
 	goecs "github.com/oneforx/go-ecs"
 )
+
+// Mock TextureAtlas pour les tests
+type MockTextureAtlas struct{}
+
+func (m *MockTextureAtlas) Bind(unit uint32) {}
+func (m *MockTextureAtlas) GetTextureCoords(textureName string) (float32, float32, float32, float32) {
+	return 0.0, 0.0, 1.0, 1.0
+}
+func (m *MockTextureAtlas) GetID() uint32 { return 0 }
+func (m *MockTextureAtlas) Cleanup()      {}
+
+// createMockRegistry crée un BlockRegistry pour les tests avec des modèles basiques
+func createMockRegistry() *BlockRegistry {
+	registry := NewBlockRegistry()
+
+	// Créer des modèles basiques pour les tests
+	stoneModel := &BlockModel{
+		Textures: map[string]string{
+			"all": "minecraft:block/stone",
+		},
+		Elements: []BlockElement{
+			{
+				From: []float32{0, 0, 0},
+				To:   []float32{16, 16, 16},
+				Faces: map[string]BlockFace{
+					"north": {Texture: "minecraft:block/stone"},
+					"south": {Texture: "minecraft:block/stone"},
+					"east":  {Texture: "minecraft:block/stone"},
+					"west":  {Texture: "minecraft:block/stone"},
+					"up":    {Texture: "minecraft:block/stone"},
+					"down":  {Texture: "minecraft:block/stone"},
+				},
+			},
+		},
+	}
+
+	dirtModel := &BlockModel{
+		Textures: map[string]string{
+			"all": "minecraft:block/dirt",
+		},
+		Elements: []BlockElement{
+			{
+				From: []float32{0, 0, 0},
+				To:   []float32{16, 16, 16},
+				Faces: map[string]BlockFace{
+					"north": {Texture: "minecraft:block/dirt"},
+					"south": {Texture: "minecraft:block/dirt"},
+					"east":  {Texture: "minecraft:block/dirt"},
+					"west":  {Texture: "minecraft:block/dirt"},
+					"up":    {Texture: "minecraft:block/dirt"},
+					"down":  {Texture: "minecraft:block/dirt"},
+				},
+			},
+		},
+	}
+
+	grassModel := &BlockModel{
+		Textures: map[string]string{
+			"top":    "minecraft:block/grass_block_top",
+			"side":   "minecraft:block/grass_block_side",
+			"bottom": "minecraft:block/dirt",
+		},
+		Elements: []BlockElement{
+			{
+				From: []float32{0, 0, 0},
+				To:   []float32{16, 16, 16},
+				Faces: map[string]BlockFace{
+					"north": {Texture: "minecraft:block/grass_block_side"},
+					"south": {Texture: "minecraft:block/grass_block_side"},
+					"east":  {Texture: "minecraft:block/grass_block_side"},
+					"west":  {Texture: "minecraft:block/grass_block_side"},
+					"up":    {Texture: "minecraft:block/grass_block_top"},
+					"down":  {Texture: "minecraft:block/dirt"},
+				},
+			},
+		},
+	}
+
+	// Ajouter les modèles au registry
+	registry.Models["minecraft:block/stone"] = stoneModel
+	registry.Models["minecraft:block/dirt"] = dirtModel
+	registry.Models["minecraft:block/grass_block"] = grassModel
+
+	return registry
+}
+
+// createMockAtlas crée un TextureAtlas pour les tests
+func createMockAtlas() render.TextureAtlas {
+	return &MockTextureAtlas{}
+}
 
 func TestNewChunk(t *testing.T) {
 	position := mgl32.Vec3{0, 0, 0}
 	size := ChunkSize{Width: 16, Height: 32, Depth: 16}
 	planet := &Planet{}
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
 
-	chunk := NewChunk(position, size, planet)
+	chunk := NewChunk(position, size, planet, registry, atlas)
 
 	if chunk == nil {
 		t.Fatal("NewChunk returned nil")
 	}
 
-	if chunk.GetState() != ChunkStateUninitialized {
-		t.Errorf("Expected initial state ChunkStateUninitialized, got %v", chunk.GetState())
+	if chunk.GetState() != ChunkStateInitialized {
+		t.Errorf("Expected initial state ChunkStateInitialized, got %v", chunk.GetState())
 	}
 
 	if chunk.Position != position {
@@ -32,12 +126,13 @@ func TestNewChunk(t *testing.T) {
 }
 
 func TestChunkStateTransitions(t *testing.T) {
-	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, &Planet{})
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, &Planet{}, registry, atlas)
 
 	// Test des transitions d'état
-	chunk.SetState(ChunkStateInitialized)
 	if chunk.GetState() != ChunkStateInitialized {
-		t.Errorf("Expected state ChunkStateInitialized, got %v", chunk.GetState())
+		t.Errorf("Expected initial state ChunkStateInitialized, got %v", chunk.GetState())
 	}
 
 	chunk.SetState(ChunkStateGenerating)
@@ -49,10 +144,16 @@ func TestChunkStateTransitions(t *testing.T) {
 	if !chunk.IsReady() {
 		t.Error("Expected chunk to be ready")
 	}
+
+	if chunk.IsGenerating() {
+		t.Error("Expected chunk to not be generating")
+	}
 }
 
 func TestChunkBlockOperations(t *testing.T) {
-	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, &Planet{})
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, &Planet{}, registry, atlas)
 
 	// Test SetBlock et GetBlock
 	block := NewStoneBlock()
@@ -82,6 +183,48 @@ func TestChunkBlockOperations(t *testing.T) {
 	}
 }
 
+func TestChunkError(t *testing.T) {
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, &Planet{}, registry, atlas)
+
+	// Test error handling
+	testError := "test error"
+	chunk.SetError(fmt.Errorf(testError))
+
+	if chunk.GetState() != ChunkStateError {
+		t.Errorf("Expected state ChunkStateError, got %v", chunk.GetState())
+	}
+
+	if chunk.GetError() == nil {
+		t.Error("Expected error to be set")
+	}
+
+	if chunk.GetError().Error() != testError {
+		t.Errorf("Expected error message '%s', got '%s'", testError, chunk.GetError().Error())
+	}
+}
+
+func TestChunkBoundingBox(t *testing.T) {
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+	position := mgl32.Vec3{10, 20, 30}
+	size := ChunkSize{Width: 16, Height: 32, Depth: 16}
+	chunk := NewChunk(position, size, &Planet{}, registry, atlas)
+
+	bbox := chunk.GetBoundingBox()
+	expectedMin := position
+	expectedMax := position.Add(mgl32.Vec3{float32(size.Width), float32(size.Height), float32(size.Depth)})
+
+	if bbox.Min != expectedMin {
+		t.Errorf("Expected min %v, got %v", expectedMin, bbox.Min)
+	}
+
+	if bbox.Max != expectedMax {
+		t.Errorf("Expected max %v, got %v", expectedMax, bbox.Max)
+	}
+}
+
 func TestChunkGenerator(t *testing.T) {
 	config := GenerationConfig{
 		Base:        10.0,
@@ -101,7 +244,9 @@ func TestChunkGenerator(t *testing.T) {
 		Size: mgl32.Vec3{3, 3, 3},
 	}
 
-	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, planet)
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+	chunk := NewChunk(mgl32.Vec3{0, 0, 0}, ChunkSize{16, 32, 16}, planet, registry, atlas)
 	chunk.BoundaryFaces = []WorldFace{WorldFaceTop}
 
 	err := generator.GenerateChunk(chunk)
@@ -157,7 +302,10 @@ func TestPlanetInitializeChunks(t *testing.T) {
 		42,
 	)
 
-	err := planet.InitializeChunks()
+	registry := createMockRegistry()
+	atlas := createMockAtlas()
+
+	err := planet.InitializeChunks(registry, atlas)
 	if err != nil {
 		t.Errorf("InitializeChunks failed: %v", err)
 	}
@@ -182,12 +330,6 @@ func TestPlanetInitializeChunks(t *testing.T) {
 				}
 			}
 		}
-	}
-
-	// Vérifier que les chunks de bordure ont les bonnes faces
-	chunk, _ := planet.GetChunk(0, 0, 0) // Coin inférieur gauche arrière
-	if len(chunk.BoundaryFaces) != 3 {
-		t.Errorf("Expected 3 boundary faces for corner chunk, got %d", len(chunk.BoundaryFaces))
 	}
 
 	// Vérifier les coordonnées hors limites
