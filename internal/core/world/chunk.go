@@ -417,13 +417,45 @@ func (c *Chunk) isFaceVisible(x, y, z int, faceName string) bool {
 		ny++
 	}
 
+	// Vérifier si le voisin est dans les limites du chunk
 	if nx < 0 || nx >= c.Size.Width || ny < 0 || ny >= c.Size.Height || nz < 0 || nz >= c.Size.Depth {
-		neighbor, _, err := c.Planet.GetBlockAt(int(c.Position.X())+nx, int(c.Position.Y())+ny, int(c.Position.Z())+nz)
-		return err != nil || neighbor == nil || neighbor.Type == BlockTypeAir
+		// Voisin hors du chunk - utiliser les coordonnées globales
+		globalX := int(c.Position.X()) + nx
+		globalY := int(c.Position.Y()) + ny
+		globalZ := int(c.Position.Z()) + nz
+
+		neighbor, _, err := c.Planet.GetBlockAt(globalX, globalY, globalZ)
+
+		// Cas spéciaux pour le débogage
+		isVisible := err != nil || neighbor == nil || neighbor.Type == BlockTypeAir
+
+		// Log de débogage pour les cas problématiques (décommentez si nécessaire)
+		// if !isVisible && (neighbor != nil && neighbor.Type != BlockTypeAir) {
+		// 	log.Printf("DEBUG: Face %s du bloc (%d,%d,%d) cachée par voisin externe (%d,%d,%d) type %v",
+		// 		faceName, x, y, z, globalX, globalY, globalZ, neighbor.Type)
+		// }
+
+		return isVisible
 	}
 
-	neighbor, _ := c.GetBlock(nx, ny, nz)
-	return neighbor.Type == BlockTypeAir
+	// Voisin dans le chunk
+	neighbor, err := c.GetBlock(nx, ny, nz)
+	if err != nil {
+		// En cas d'erreur, considérer la face comme visible par sécurité
+		log.Printf("WARNING: Erreur lors de la vérification du voisin (%d,%d,%d) pour face %s du bloc (%d,%d,%d): %v",
+			nx, ny, nz, faceName, x, y, z, err)
+		return true
+	}
+
+	isVisible := neighbor.Type == BlockTypeAir
+
+	// Log de débogage pour les cas problématiques (décommentez si nécessaire)
+	// if !isVisible {
+	// 	log.Printf("DEBUG: Face %s du bloc (%d,%d,%d) cachée par voisin interne (%d,%d,%d) type %v",
+	// 		faceName, x, y, z, nx, ny, nz, neighbor.Type)
+	// }
+
+	return isVisible
 }
 
 // GenerateMesh génère le mesh OpenGL du chunk
